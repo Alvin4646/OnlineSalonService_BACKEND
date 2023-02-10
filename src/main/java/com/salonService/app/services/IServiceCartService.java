@@ -8,7 +8,7 @@ import com.salonService.app.entity.ServiceCart;
 import com.salonService.app.exception.SalonServiceNotFoundException;
 
 public interface IServiceCartService {
-	public ServiceCart addServiceToCart(SalonService service,Integer custId)throws SalonServiceNotFoundException ;
+	public ServiceCart addServiceToCart(SalonService service,int custId)throws SalonServiceNotFoundException ;
 
 	public String deleteServiceById(Long orderId) ;
 

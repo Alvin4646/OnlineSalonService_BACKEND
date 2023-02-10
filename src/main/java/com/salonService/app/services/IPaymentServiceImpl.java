@@ -6,20 +6,26 @@ import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.salonService.app.entity.Appointment;
 import com.salonService.app.entity.Payment;
+import com.salonService.app.exception.PaymentException;
+import com.salonService.app.repository.IAppointmentRepository;
 import com.salonService.app.repository.IPaymentRepository;
+
 @Service
-public class IPaymentServiceImpl implements IPaymentService{
-@Autowired
-private IPaymentRepository iPaymentRepository;
+public class IPaymentServiceImpl implements IPaymentService {
+	@Autowired
+	private IPaymentRepository iPaymentRepository;
+	@Autowired
+	private IAppointmentRepository iAppointmentRepository;
+
 	@Override
-	public Payment getPaymentById(long paymentId) {
-		Optional<Payment> pay= iPaymentRepository.findById(paymentId);
-		if(pay.isPresent()) {
+	public Payment getPaymentById(long paymentId)throws PaymentException {
+		Optional<Payment> pay = iPaymentRepository.findById(paymentId);
+		if (pay.isPresent()) {
 			return pay.get();
-		}
-		else {
-		return null;
+		} else {
+			throw new PaymentException("Payment with idv"+paymentId+" was not found");
 		}
 	}
 
@@ -31,36 +37,46 @@ private IPaymentRepository iPaymentRepository;
 
 	@Override
 	public Payment deletePayment(long paymentId) {
-		Optional<Payment> PaymentToBeDeleted =  iPaymentRepository.findById(paymentId);
+		Optional<Payment> PaymentToBeDeleted = iPaymentRepository.findById(paymentId);
 		iPaymentRepository.deleteById(paymentId);
-		
-		if(PaymentToBeDeleted.isPresent()) {
+
+		if (PaymentToBeDeleted.isPresent()) {
 			return PaymentToBeDeleted.get();
-		}
-		else {
+		} else {
 			return null;
 		}
-	
-		
+
 	}
 
 	@Override
-	public  Payment updatePayment(long paymentId, Payment payment) {
+	public Payment updatePayment(long paymentId, Payment payment) {
 
-		if(iPaymentRepository.existsById(paymentId)) {
+		if (iPaymentRepository.existsById(paymentId)) {
 			Payment paymentToBeUpdated = iPaymentRepository.findById(paymentId).get();
 			iPaymentRepository.save(payment);
 			return paymentToBeUpdated;
 		}
 		return null;
-		
-		
+
 	}
 
 	@Override
 	public List<Payment> getAllPaymentDetails() {
 		// TODO Auto-generated method stub
 		return iPaymentRepository.findAll();
+	}
+
+	@Override
+	public Payment addPaymentToAppointment(Payment payment,long id) {
+		Optional<Appointment> existAppointment=iAppointmentRepository.findById(id);
+		if(existAppointment.isEmpty()) {
+			//Exception
+		}
+		Appointment foundAppointment=existAppointment.get();
+		Payment newPayment=addPayment(payment);
+		foundAppointment.setPayment(newPayment);
+		iAppointmentRepository.save(foundAppointment);
+		return payment;
 	}
 
 }

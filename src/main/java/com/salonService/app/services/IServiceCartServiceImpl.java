@@ -24,7 +24,7 @@ public class IServiceCartServiceImpl implements IServiceCartService {
 	@Autowired
 	ISalonService iSalonService;
 	
-	public ServiceCart addServiceToCart(SalonService service,Integer custId) throws SalonServiceNotFoundException {
+	public ServiceCart addServiceToCart(SalonService service,int custId) throws SalonServiceNotFoundException {
 		ServiceCart cart=null;
 		Customer customer = iCustomerService.getCustomer(custId);
 		if (customer==null) {
@@ -50,6 +50,7 @@ public class IServiceCartServiceImpl implements IServiceCartService {
 		return serviceRepo.save(cart);
 
 	}
+	
 	@Override
 	public String deleteServiceById(Long orderId) {
 		serviceRepo.deleteById(orderId);

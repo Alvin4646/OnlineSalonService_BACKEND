@@ -11,7 +11,9 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.salonService.app.entity.Appointment;
 import com.salonService.app.entity.Payment;
+import com.salonService.app.exception.PaymentException;
 import com.salonService.app.services.IPaymentService;
 
 @RestController
@@ -23,6 +25,10 @@ public class PaymentController {
 	public Payment addPayment(@RequestBody Payment payment) {
 		return this.iPaymentService.addPayment(payment);
 
+	}
+	@PostMapping("/payment/{id}")
+	public Payment addAppointmentToCustomer(@RequestBody Payment appointment,@PathVariable long id) {
+		return this.iPaymentService.addPaymentToAppointment(appointment, id);
 	}
 
 	@DeleteMapping("/deletePayment/(id)")
@@ -41,7 +47,8 @@ public class PaymentController {
 	}
 
 	@GetMapping("/payment/{id}")
-	public Payment findEmployee(@PathVariable long id) {
+	public Payment findEmployee(@PathVariable long id)throws PaymentException {
 		return iPaymentService.getPaymentById(id);
 	}
+	
 }

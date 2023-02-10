@@ -8,19 +8,18 @@ import javax.persistence.OneToOne;
 public class Payment {
 	@Id
 	private Long paymentId;
-	private String type;
-	private String status;	
-	@OneToOne
-	private Card card;
+	private ModeOfPayment type;
+	private PaymentStatus status;	
+	
 	public Payment() {
 		super();
 	}
-	public Payment(Long paymentId, String type, String status, Card card) {
+	public Payment(Long paymentId, ModeOfPayment type, PaymentStatus status) {
 		super();
 		this.paymentId = paymentId;
 		this.type = type;
 		this.status = status;
-		this.card = card;
+	
 	}
 	public Long getPaymentId() {
 		return paymentId;
@@ -28,29 +27,29 @@ public class Payment {
 	public void setPaymentId(Long paymentId) {
 		this.paymentId = paymentId;
 	}
-	public String getType() {
+	public ModeOfPayment getType() {
 		return type;
 	}
-	public void setType(String type) {
+	public void setType(ModeOfPayment type) {
 		this.type = type;
 	}
-	public String getStatus() {
+	public PaymentStatus getStatus() {
 		return status;
 	}
-	public void setStatus(String status) {
+	public void setStatus(PaymentStatus status) {
 		this.status = status;
 	}
-	public Card getCard() {
-		return card;
-	}
-	public void setCard(Card card) {
-		this.card = card;
-	}
+
 	@Override
 	public String toString() {
-		return "Payment [paymentId=" + paymentId + ", type=" + type + ", status=" + status + ", card=" + card + "]";
+		return "Payment [paymentId=" + paymentId + ", type=" + type + ", status=" + status + "]";
 	}
 	
-	
+	public enum ModeOfPayment{
+		CASH,CARD
+	}
+	public enum PaymentStatus{
+		PENDING,PAID
+	}
 
 }

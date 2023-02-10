@@ -6,9 +6,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.Id;
 import javax.persistence.ManyToMany;
-
+import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
 @Entity
 public class Appointment {
@@ -17,19 +18,24 @@ public class Appointment {
 	private String location;
 	private LocalDate preferredDate;
 	private LocalTime preferredTime;
-	@ManyToMany
-	List<SalonService> serviceName =new ArrayList<>();
+	private AppointmentStatus appointmentStatus;
+
+	@ManyToOne
+	ServiceCart cart;
+	//List<SalonService> serviceName =new ArrayList<>();
 	@OneToOne
 	Payment payment;
+	
 	public Appointment(long appointmentId, String location, LocalDate preferredDate, LocalTime preferredTime,
-			List<SalonService> serviceName, Payment payment) {
+			ServiceCart cart, Payment payment,AppointmentStatus appointmentStatus) {
 		super();
 		this.appointmentId = appointmentId;
 		this.location = location;
 		this.preferredDate = preferredDate;
 		this.preferredTime = preferredTime;
-		this.serviceName = serviceName;
+		this.cart = cart;
 		this.payment = payment;
+		this.appointmentStatus=appointmentStatus;
 	}
 	public Appointment() {
 		super();
@@ -59,17 +65,28 @@ public class Appointment {
 	public void setPreferredTime(LocalTime preferredTime) {
 		this.preferredTime = preferredTime;
 	}
-	public List<SalonService> getServiceName() {
-		return serviceName;
-	}
-	public void setServiceName(List<SalonService> serviceName) {
-		this.serviceName = serviceName;
-	}
 	public Payment getPayment() {
 		return payment;
 	}
+	public AppointmentStatus getAppointmentStatus() {
+		return appointmentStatus;
+	}
+	public void setAppointmentStatus(AppointmentStatus appointmentStatus) {
+		this.appointmentStatus = appointmentStatus;
+	}
 	public void setPayment(Payment payment) {
 		this.payment = payment;
+	}
+	
+	public ServiceCart getCart() {
+		return cart;
+	}
+	public void setCart(ServiceCart cart) {
+		this.cart = cart;
+	}
+
+	public enum AppointmentStatus{
+		OPEN,CLOSE
 	}
 	
 }

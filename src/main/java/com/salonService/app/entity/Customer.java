@@ -11,7 +11,7 @@ import javax.persistence.OneToOne;
 @Entity
 public class Customer {
 	@Id
-	private String userId;
+	private Integer userId;
 	private String name;
 	private String email;
 	private String password;
@@ -21,14 +21,13 @@ public class Customer {
 	private List<Appointment> appointments= new ArrayList<>();
 	@OneToOne
 	private ServiceCart cart;
-	@OneToOne
-	private Address address;
+	private String address;
 	public Customer() {
 		super();
 		// TODO Auto-generated constructor stub
 	}
-	public Customer(String userId, String name, String email, String password, Integer contactNo, LocalDate dob,
-			List<Appointment> appointments, ServiceCart cart, Address address) {
+	public Customer(Integer userId, String name, String email, String password, Integer contactNo, LocalDate dob,
+			List<Appointment> appointments, ServiceCart cart, String address) {
 		super();
 		this.userId = userId;
 		this.name = name;
@@ -40,10 +39,10 @@ public class Customer {
 		this.cart = cart;
 		this.address = address;
 	}
-	public String getUserId() {
+	public Integer getUserId() {
 		return userId;
 	}
-	public void setUserId(String userId) {
+	public void setUserId(Integer userId) {
 		this.userId = userId;
 	}
 	public String getName() {
@@ -88,10 +87,10 @@ public class Customer {
 	public void setCart(ServiceCart cart) {
 		this.cart = cart;
 	}
-	public Address getAddress() {
+	public String getAddress() {
 		return address;
 	}
-	public void setAddress(Address address) {
+	public void setAddress(String address) {
 		this.address = address;
 	}
 	

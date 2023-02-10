@@ -6,12 +6,16 @@ import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.salonService.app.entity.Appointment;
 import com.salonService.app.entity.Customer;
 import com.salonService.app.repository.ICustomerRepository;
 @Service
 public class ICustomerServicceImpl implements ICustomerService {
 @Autowired
 private ICustomerRepository iCustomerRepository ;
+@Autowired
+private IAppointmentServiceImpl iAppointmentServiceImpl;
+
 	@Override
 	public Customer getCustomer(Integer userId) {
 		Optional<Customer> optCustomer = iCustomerRepository.findById(userId);	
@@ -53,6 +57,13 @@ private ICustomerRepository iCustomerRepository ;
 	public List<Customer> getAllCustomers() {
 		// TODO Auto-generated method stub
 		return iCustomerRepository.findAll();
+	}
+	@Override
+	public List<Appointment> getAllAppointmentsForCustomer(Integer userId){
+		//return iAppointmentServiceImpl.getAppointmentById(userId);
+		Customer customer=getCustomer(userId);
+		
+		return customer.getAppointments();
 	}
 
 }

@@ -29,7 +29,7 @@ public class ServiceCartController {
 //	public ServiceCart addToCart(@RequestBody ServiceCart serviceCart) {
 //	return serviceCartService.addServiceToCart(serviceCart);	
 //	}
-//	
+////	
 	@GetMapping("/getCart/{id}")
 	public ServiceCart getCartById(@PathVariable long id) {
 		return serviceCartService.getServiceCartByid(id);
