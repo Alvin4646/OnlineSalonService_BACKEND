@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.salonService.app.entity.Appointment;
 import com.salonService.app.entity.Customer;
+import com.salonService.app.exception.AppointmentException;
 import com.salonService.app.services.ICustomerService;
 
 @RestController
@@ -32,13 +33,13 @@ public class CustomerController {
 	@GetMapping("/customer/{aid}")
 	public ResponseEntity<?> getCustomer(@PathVariable("aid") Integer custId, HttpServletRequest request) {
 
-		Customer customer = iCustomerService.getCustomer(custId);
+		Customer customer = iCustomerService.getCustomer(custId); 
 		if (customer == null) {
 			// Exception
 		}
 		return new ResponseEntity<Customer>(customer, HttpStatus.OK);
 	}
-	@DeleteMapping("/deleteCustomer/{aid}")
+	@DeleteMapping("/deleteCustomer/{cid}")
 	public ResponseEntity<String> removeCustomer(@PathVariable("aid") Integer custId, HttpServletRequest request) {
 		Customer deleteCustomer = iCustomerService.deleteCustomer(custId) ;
 		if(deleteCustomer != null) {
@@ -62,12 +63,27 @@ public class CustomerController {
 		return iCustomerService.getAllCustomers();
 	}
 
-	@PutMapping("/updateCustomers/(id)")
+	@PutMapping("/updateCustomers/{id}")
 	public Customer updateCustomer(@RequestBody Customer customer, @PathVariable Integer id) {
 		return iCustomerService.updateCustomer(id, customer);
 	}
+//	@PutMapping("/updateCustomers/(id)")
+//	public ResponseEntity<String> updateCustomer(@RequestBody Customer customer, @PathVariable Integer id, HttpServletRequest request) {
+//
+//		Customer updatedCustomer = iCustomerService.updateCustomer(id, customer);
+//		if(updatedCustomer != null) {
+//			return new ResponseEntity<String>("Customer updated successfully", HttpStatus.OK);
+//		}
+//		else
+//			return new ResponseEntity<String>("Customer failed to update", HttpStatus.NOT_FOUND);
+//	}
+	
 	@GetMapping("/customerAppointments/{id}")
 	public List<Appointment> getAllCustomerAppointments(@PathVariable Integer id){
 		return iCustomerService.getAllAppointmentsForCustomer(id);
+	}
+	@DeleteMapping("/customer/{cid}")
+	public Appointment removeAppointment(@RequestBody long aid,@PathVariable Integer cid) throws AppointmentException{
+		return iCustomerService.removeAppointmentByid(cid, aid);
 	}
 }

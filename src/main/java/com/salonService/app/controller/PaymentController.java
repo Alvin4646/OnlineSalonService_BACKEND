@@ -31,8 +31,8 @@ public class PaymentController {
 		return this.iPaymentService.addPaymentToAppointment(appointment, id);
 	}
 
-	@DeleteMapping("/deletePayment/(id)")
-	public void deletePayment(@PathVariable int id) {
+	@DeleteMapping("/deletePayment/{id}")
+	public void deletePayment(@PathVariable int id) throws PaymentException {
 		 this.iPaymentService.deletePayment(id);
 	}
 
@@ -41,7 +41,7 @@ public class PaymentController {
 		return iPaymentService.getAllPaymentDetails();
 	}
 
-	@PutMapping("/updatepayment")
+	@PutMapping("/updatepayment/{id}")
 	public Payment updateEmployee(@RequestBody Payment payment, @PathVariable long id) {
 		return iPaymentService.updatePayment(id, payment);
 	}
@@ -50,5 +50,6 @@ public class PaymentController {
 	public Payment findEmployee(@PathVariable long id)throws PaymentException {
 		return iPaymentService.getPaymentById(id);
 	}
+	
 	
 }

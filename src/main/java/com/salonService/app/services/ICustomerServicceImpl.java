@@ -8,13 +8,16 @@ import org.springframework.stereotype.Service;
 
 import com.salonService.app.entity.Appointment;
 import com.salonService.app.entity.Customer;
+import com.salonService.app.exception.AppointmentException;
+import com.salonService.app.repository.IAppointmentRepository;
 import com.salonService.app.repository.ICustomerRepository;
 @Service
 public class ICustomerServicceImpl implements ICustomerService {
 @Autowired
 private ICustomerRepository iCustomerRepository ;
+
 @Autowired
-private IAppointmentServiceImpl iAppointmentServiceImpl;
+private IAppointmentService iAppointmentService;
 
 	@Override
 	public Customer getCustomer(Integer userId) {
@@ -35,7 +38,12 @@ private IAppointmentServiceImpl iAppointmentServiceImpl;
 	public Customer updateCustomer(Integer userId, Customer customer) {
 		if(iCustomerRepository.existsById(userId)) {
 			Customer customerToBeUpdated = iCustomerRepository.findById(userId).get();
-			iCustomerRepository.save(customer);
+			customerToBeUpdated.setAddress(customer.getAddress());
+			customerToBeUpdated.setContactNo(customer.getContactNo());
+			customerToBeUpdated.setDob(customer.getDob());
+			customerToBeUpdated.setEmail(customer.getEmail());
+			customerToBeUpdated.setName(customer.getName());
+			iCustomerRepository.save(customerToBeUpdated);
 			return customerToBeUpdated;
 		}
 		return null;
@@ -52,12 +60,13 @@ private IAppointmentServiceImpl iAppointmentServiceImpl;
 		return null;
 		}
 	}
-
+ 
 	@Override
 	public List<Customer> getAllCustomers() {
 		// TODO Auto-generated method stub
 		return iCustomerRepository.findAll();
 	}
+	
 	@Override
 	public List<Appointment> getAllAppointmentsForCustomer(Integer userId){
 		//return iAppointmentServiceImpl.getAppointmentById(userId);
@@ -65,5 +74,22 @@ private IAppointmentServiceImpl iAppointmentServiceImpl;
 		
 		return customer.getAppointments();
 	}
-
+	
+	public Appointment removeAppointmentByid(Integer cid,long aid) throws AppointmentException {
+		Customer cust=iCustomerRepository.findById(cid).get();
+		Appointment appointmentToRemove=null;
+		for(Appointment appointment:cust.getAppointments()) {
+			if(appointment.getAppointmentId()==aid) {
+				appointmentToRemove=appointment;
+				break;
+			}
+			
+		}
+		if(appointmentToRemove!=null) {
+			cust.getAppointments().remove(appointmentToRemove);
+			iAppointmentService.removeAppointment(aid);
+			iCustomerRepository.save(cust);
+		}
+		return appointmentToRemove;
+	}
 }

@@ -3,6 +3,8 @@ package com.salonService.app.controller;
 import java.time.LocalDate;
 import java.util.List;
 
+import javax.validation.Valid;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -21,29 +23,34 @@ import com.salonService.app.services.IAppointmentService;
 public class AppointmentController {
 	@Autowired
 	private IAppointmentService iAppointmentService;
-	@PostMapping("/appointment/{id}")
-	public Appointment addAppointmentToCustomer(@RequestBody Appointment appointment,@PathVariable int id)throws Exception {
-		return this.iAppointmentService.addAppointmentToCustomer(appointment, id);
+//	@PostMapping("/appointment")
+//	public Appointment addAppointment(@Valid @RequestBody Appointment appointment)throws Exception {
+//		return this.iAppointmentService.addAppointment(appointment);
+//	}
+	@PostMapping("/appointment/{cid}")
+	public Appointment addAppointmentToCustomer(@Valid @RequestBody Appointment appointment,@PathVariable int cid)throws Exception {
+		return this.iAppointmentService.addAppointmentToCustomer(appointment, cid);
 	}
-	@DeleteMapping("/deleteAppointment/{id}")
-	public String deleteAppointment(@PathVariable Long id) {
-		return iAppointmentService.removeAppointment(id);
-	}
-	@GetMapping("/appointmentById/{id}")
-	public Appointment findAppointmentById(@PathVariable Long id)throws Exception {
-		return iAppointmentService.getAppointmentById(id);
+//	@DeleteMapping("/deleteAppointment/{id}")
+//	public String deleteAppointment(@PathVariable Long id)throws AppointmentException {
+//		return iAppointmentService.removeAppointment(id);
+//	}
+	@GetMapping("/appointment/{aid}")
+	public Appointment findAppointmentById(@PathVariable Long aid)throws AppointmentException {
+		return iAppointmentService.getAppointmentById(aid);
 	}
 	@GetMapping("/appointments")
 	public List<Appointment> findAllAppointments() {
 		return iAppointmentService.getAllAppointments();
+		
 	}
-	@GetMapping("/appointments/{date}")
+	@GetMapping("/appointmentDt/{date}")
 	public List<Appointment> findAppointmentByDate(@PathVariable String date ) {
 		LocalDate dateToFind = LocalDate.parse(date);
 		return iAppointmentService.getAppointmentByDate(dateToFind);
 	}
-	@PutMapping("/updateAppointment/{id}")
-	public String updateAppointments(@RequestBody Appointment appointment,@PathVariable Long id)throws AppointmentException {
+	@PutMapping("/Appointment/{id}")
+	public Appointment updateAppointments(@Valid @RequestBody Appointment appointment,@PathVariable Long id)throws AppointmentException {
 		return iAppointmentService.updateAppointment(id, appointment);
 	}
 	@GetMapping("/openAppointments")

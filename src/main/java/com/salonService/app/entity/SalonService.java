@@ -7,7 +7,7 @@ import javax.persistence.Id;
 public class SalonService {
 	@Id
 	private Long serviceId;
-	private String seviceName;
+	private String seviceName; 
 	private String servicePrice;
 	private String serviceDuration;
 	public SalonService() {

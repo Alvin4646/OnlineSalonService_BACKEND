@@ -2,10 +2,13 @@ package com.salonService.app.entity;
 
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import javax.validation.constraints.NotNull;
 @Entity
 public class Admin {
 	@Id
+	@NotNull
 	private String adminId;
+	
 	private String adminPassword;
 
 	public Admin() {

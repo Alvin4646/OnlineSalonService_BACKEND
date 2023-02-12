@@ -7,23 +7,40 @@ import java.util.List;
 
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
+import javax.validation.constraints.NotNull;
+
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.datatype.jsr310.deser.LocalTimeDeserializer;
+import com.fasterxml.jackson.datatype.jsr310.ser.LocalTimeSerializer;
 @Entity
 public class Appointment {
 	@Id
+	@GeneratedValue(strategy = GenerationType.AUTO)
 	private long appointmentId;
+	
+	@NotNull(message = "Location cannot be empty")
 	private String location;
+	
+	@NotNull(message = "Date cannot be empty")
 	private LocalDate preferredDate;
+	@JsonDeserialize(using = LocalTimeDeserializer.class)
+	@JsonSerialize(using = LocalTimeSerializer.class)
 	private LocalTime preferredTime;
+	
+	@NotNull
 	private AppointmentStatus appointmentStatus;
 
 	@ManyToOne
 	ServiceCart cart;
 	//List<SalonService> serviceName =new ArrayList<>();
-	@OneToOne
+	@OneToOne( orphanRemoval = true)
 	Payment payment;
 	
 	public Appointment(long appointmentId, String location, LocalDate preferredDate, LocalTime preferredTime,

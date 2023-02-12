@@ -10,7 +10,7 @@ public interface IPaymentService {
 
 	public Payment addPayment(Payment payment);
 
-	public Payment deletePayment(long paymentId) ;
+	public Payment deletePayment(long paymentId)throws PaymentException ;
 
 	public Payment updatePayment(long paymentId, Payment payment) ;
 

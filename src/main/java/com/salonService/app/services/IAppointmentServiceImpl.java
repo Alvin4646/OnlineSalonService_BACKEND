@@ -15,67 +15,75 @@ import com.salonService.app.exception.AppointmentException;
 import com.salonService.app.exception.DuplicateAppointmentException;
 import com.salonService.app.repository.IAppointmentRepository;
 import com.salonService.app.repository.ICustomerRepository;
+
 @Service
 public class IAppointmentServiceImpl implements IAppointmentService {
 	@Autowired
 	private IAppointmentRepository iappointmentRepo;
 	@Autowired
 	private ICustomerRepository iCustomerRepo;
-	@Override
-	public Appointment addAppointment(Appointment appointment) throws DuplicateAppointmentException {
-	try {
-		 Appointment newAppointment= iappointmentRepo.save(appointment);
-		 return newAppointment;
-	}catch (EntityExistsException e) {
-		throw new DuplicateAppointmentException("You are trying to save duplicate appointment");
-	}
-	}
 
 	@Override
-	public String removeAppointment(long id) {
-		iappointmentRepo.deleteById(id);
-		return "Appointment Deleted";
+	public Appointment addAppointment(Appointment appointment) throws DuplicateAppointmentException {
+		
+		
+			Appointment newAppointment = iappointmentRepo.save(appointment);
+			return newAppointment;
 		
 	}
 
 	@Override
-	public String updateAppointment(long id, Appointment appointments) throws AppointmentException{
-		Optional<Appointment>existingAppointment=iappointmentRepo.findById(id);
-		if(!existingAppointment.isPresent()) {
-			throw new AppointmentException("Could not update no appointment with id "+id+" found");
+	public String removeAppointment(long id) throws AppointmentException {
+		// iappointmentRepo.deleteById(id);
+		Optional<Appointment> appointment = iappointmentRepo.findById(id); 
+		if (!appointment.isPresent()) {
+			throw new AppointmentException("Unable to delete no appointment with id " + id + " found");
 		}
-		Appointment updatedAppointment=existingAppointment.get();
+		iappointmentRepo.deleteById(id);
+
+		return "Appointment Deleted";
+
+	}
+
+	@Override
+	public Appointment updateAppointment(long id, Appointment appointments) throws AppointmentException {
+		Optional<Appointment> existingAppointment = iappointmentRepo.findById(id);
+		if (!existingAppointment.isPresent()) {
+			throw new AppointmentException("Could not update!! No appointment with id " + id + " found");
+		}
+		Appointment updatedAppointment = existingAppointment.get();
 		updatedAppointment.setAppointmentId(appointments.getAppointmentId());
 		updatedAppointment.setLocation(appointments.getLocation());
 		updatedAppointment.setPreferredDate(appointments.getPreferredDate());
 		updatedAppointment.setPreferredTime(appointments.getPreferredTime());
 		updatedAppointment.setCart(appointments.getCart());
 		updatedAppointment.setPayment(appointments.getPayment());
-		iappointmentRepo.save(updatedAppointment);
-		return "Updated Succesfully";
-	}
-	
-	@Override
-	public Appointment updateAppointmentDate(long id,LocalDate preferredDate)throws AppointmentException {
-		Optional<Appointment>existingAppointment=iappointmentRepo.findById(id);
-		if(!existingAppointment.isPresent()) {
-			throw new AppointmentException("Could not update date no appointment with id "+id+" found");
-		}
-		Appointment updatedAppointment=existingAppointment.get();
-		updatedAppointment.setPreferredDate(preferredDate);
-		iappointmentRepo.save(updatedAppointment);
-		return updatedAppointment;
 		
+		return iappointmentRepo.save(updatedAppointment);
 	}
 
 	@Override
-	public Appointment getAppointmentById(Long id)throws AppointmentException {
-		Optional<Appointment> foundAppointment= iappointmentRepo.findById(id);
-		if(!foundAppointment.isPresent()) {
-			throw new AppointmentException("No Appointment with this id "+id+" found");
+	public Appointment updateAppointmentDate(long id, LocalDate preferredDate) throws AppointmentException {
+		Optional<Appointment> existingAppointment = iappointmentRepo.findById(id);
+		if (!existingAppointment.isPresent()) {
+			throw new AppointmentException("Could not update date no appointment with id " + id + " found");
+		}
+		Appointment updatedAppointment = existingAppointment.get();
+		updatedAppointment.setPreferredDate(preferredDate);
+		iappointmentRepo.save(updatedAppointment);
+		return updatedAppointment;
+
+	}
+
+	@Override
+	public Appointment getAppointmentById(Long id) throws AppointmentException {
+		Optional<Appointment> foundAppointment = iappointmentRepo.findById(id);
+		if (!foundAppointment.isPresent()) {
+			throw new AppointmentException("No Appointment with this id " + id + " found");
 		}
 		return foundAppointment.get();
 	}
+
 	@Override
 	public List<Appointment> getAppointmentByDate(LocalDate date) {
 		// TODO Auto-generated method stub
@@ -84,29 +92,26 @@ public class IAppointmentServiceImpl implements IAppointmentService {
 
 	@Override
 	public List<Appointment> getAllAppointments() {
-		
+
 		return iappointmentRepo.findAll();
 	}
 
 	@Override
 	public List<Appointment> getOpenAppointments() {
-		return iappointmentRepo.findByAppointmentStatus( Appointment.AppointmentStatus.OPEN);
-		
-	
+		return iappointmentRepo.findByAppointmentStatus(Appointment.AppointmentStatus.OPEN);
 	}
-	
+
 	@Override
-	public Appointment addAppointmentToCustomer(Appointment appointment,int custId)throws Exception {
-		Optional<Customer> customer= iCustomerRepo.findById(custId);
-		if(customer.isEmpty()) {
-			throw new AppointmentException("No customer with this id "+custId+" found");
+	public Appointment addAppointmentToCustomer(Appointment appointment, int custId) throws Exception {
+		Optional<Customer> customer = iCustomerRepo.findById(custId);
+		if (customer.isEmpty()) {
+			throw new AppointmentException("No customer with this id " + custId + " found");
 		}
-		Customer foundCustomer=customer.get();
-		Appointment newAppointment=addAppointment(appointment);
+		Customer foundCustomer = customer.get();
+		Appointment newAppointment = addAppointment(appointment);
 		foundCustomer.getAppointments().add(newAppointment);
 		iCustomerRepo.save(foundCustomer);
 		return newAppointment;
 	}
-	
 
 }

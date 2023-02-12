@@ -36,7 +36,7 @@ public class IPaymentServiceImpl implements IPaymentService {
 	}
 
 	@Override
-	public Payment deletePayment(long paymentId) {
+	public Payment deletePayment(long paymentId)throws PaymentException {
 		Optional<Payment> PaymentToBeDeleted = iPaymentRepository.findById(paymentId);
 		iPaymentRepository.deleteById(paymentId);
 
@@ -53,7 +53,9 @@ public class IPaymentServiceImpl implements IPaymentService {
 
 		if (iPaymentRepository.existsById(paymentId)) {
 			Payment paymentToBeUpdated = iPaymentRepository.findById(paymentId).get();
-			iPaymentRepository.save(payment);
+			paymentToBeUpdated.setStatus(payment.getStatus());
+			paymentToBeUpdated.setType(payment.getType());
+			iPaymentRepository.save(paymentToBeUpdated);
 			return paymentToBeUpdated;
 		}
 		return null;

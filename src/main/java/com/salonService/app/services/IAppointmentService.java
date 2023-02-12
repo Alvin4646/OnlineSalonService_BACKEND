@@ -9,9 +9,9 @@ import com.salonService.app.exception.DuplicateAppointmentException;
 
 public interface IAppointmentService {
 	public Appointment addAppointment(Appointment appointment)throws DuplicateAppointmentException;
-	public String removeAppointment(long id);
+	public String removeAppointment(long id)throws AppointmentException;
 
-	public String updateAppointment(long id, Appointment appointments)throws AppointmentException;
+	public Appointment updateAppointment(long id, Appointment appointments)throws AppointmentException;
 
 	public Appointment getAppointmentById(Long id) throws AppointmentException;
 
