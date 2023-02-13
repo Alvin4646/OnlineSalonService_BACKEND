@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.salonService.app.entity.Appointment;
 import com.salonService.app.entity.Payment;
+import com.salonService.app.entity.SalonService;
 import com.salonService.app.exception.AppointmentException;
 
 import com.salonService.app.services.IAppointmentService;
@@ -25,33 +26,25 @@ public class AppointmentController {
 	@Autowired
 	private IAppointmentService iAppointmentService;
 
-//	@PostMapping("/appointment")
-//	public Appointment addAppointment(@Valid @RequestBody Appointment appointment)throws Exception {
-//		return this.iAppointmentService.addAppointment(appointment);
-//	}
 	@PostMapping("/appointment/{cid}")
 	public Appointment addAppointmentToCustomer(@Valid @RequestBody Appointment appointment, @PathVariable int cid)
 			throws Exception {
 		return this.iAppointmentService.addAppointmentToCustomer(appointment, cid);
 	}
 
-//	@DeleteMapping("/deleteAppointment/{id}")
-//	public String deleteAppointment(@PathVariable Long id)throws AppointmentException {
-//		return iAppointmentService.removeAppointment(id);
-//	}
 	@GetMapping("/appointment/{aid}")
 	public Appointment findAppointmentById(@PathVariable Long aid) throws AppointmentException {
 		return iAppointmentService.getAppointmentById(aid);
 	}
 
 	@GetMapping("/appointments")
-	public List<Appointment> findAllAppointments() {
+	public List<Appointment> findAllAppointments() throws AppointmentException {
 		return iAppointmentService.getAllAppointments();
 
 	}
 
 	@GetMapping("/appointmentDt/{date}")
-	public List<Appointment> findAppointmentByDate(@PathVariable String date) {
+	public List<Appointment> findAppointmentByDate(@PathVariable String date) throws AppointmentException {
 		LocalDate dateToFind = LocalDate.parse(date);
 		return iAppointmentService.getAppointmentByDate(dateToFind);
 	}
@@ -63,7 +56,7 @@ public class AppointmentController {
 	}
 
 	@GetMapping("/openAppointments")
-	public List<Appointment> getOpenAppointments() {
+	public List<Appointment> getOpenAppointments() throws AppointmentException {
 		return iAppointmentService.getOpenAppointments();
 	}
 
@@ -71,6 +64,17 @@ public class AppointmentController {
 	public Appointment updateAppointmentDate(@RequestBody LocalDate preferredDate, @PathVariable Long id)
 			throws AppointmentException {
 		return iAppointmentService.updateAppointmentDate(id, preferredDate);
+	}
+
+	@DeleteMapping("/appointment/{customerid}")
+	public Appointment removeAppointment(@RequestBody long aid, @PathVariable Integer customerid)
+			throws AppointmentException {
+		return iAppointmentService.removeAppointmentByid(customerid, aid);
+	}
+
+	@GetMapping("/appointment/services/{appointmentId}")
+	public List<SalonService> getAllServices(@PathVariable long appointmentId) throws AppointmentException {
+		return iAppointmentService.getServiceList(appointmentId);
 	}
 
 }

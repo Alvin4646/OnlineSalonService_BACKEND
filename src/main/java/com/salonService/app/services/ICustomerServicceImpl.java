@@ -11,6 +11,7 @@ import com.salonService.app.entity.Customer;
 import com.salonService.app.exception.AppointmentException;
 import com.salonService.app.repository.IAppointmentRepository;
 import com.salonService.app.repository.ICustomerRepository;
+
 @Service
 public class ICustomerServicceImpl implements ICustomerService {
 @Autowired
@@ -25,7 +26,7 @@ private IAppointmentService iAppointmentService;
 		if(optCustomer.isPresent()) {
 			return optCustomer.get();
 		}
-		else
+		else 
 		return null;
 	}
 
@@ -85,7 +86,7 @@ private IAppointmentService iAppointmentService;
 			}
 			
 		}
-		if(appointmentToRemove!=null) {
+		if(appointmentToRemove!=null) { 
 			cust.getAppointments().remove(appointmentToRemove);
 			iAppointmentService.removeAppointment(aid);
 			iCustomerRepository.save(cust);

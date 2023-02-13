@@ -12,7 +12,7 @@ public class Payment {
 	private PaymentStatus status;	
 	
 	public Payment() {
-		super();
+		super(); 
 	}
 	public Payment(Long paymentId, ModeOfPayment type, PaymentStatus status) {
 		super();

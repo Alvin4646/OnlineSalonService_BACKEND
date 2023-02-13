@@ -42,7 +42,7 @@ public class CustomerController {
 	@DeleteMapping("/deleteCustomer/{cid}")
 	public ResponseEntity<String> removeCustomer(@PathVariable("aid") Integer custId, HttpServletRequest request) {
 		Customer deleteCustomer = iCustomerService.deleteCustomer(custId) ;
-		if(deleteCustomer != null) {
+		if(deleteCustomer != null) { 
 			return new ResponseEntity<String>("Customer deleted successfully", HttpStatus.OK);
 		}
 		else

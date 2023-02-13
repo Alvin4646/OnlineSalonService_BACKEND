@@ -13,10 +13,13 @@ import javax.persistence.Id;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
+import javax.validation.constraints.Future;
+import javax.validation.constraints.FutureOrPresent;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.datatype.jsr310.deser.LocalTimeDeserializer;
@@ -31,20 +34,24 @@ public class Appointment {
 	@NotBlank(message = "Location cannot be empty")
 	@Pattern(regexp = "Mumbai|Pune|Bangalore|Delhi|mumbai|pune|bangalore|delhi", message = "Invalid location, valid locations ara Mumbai, Pune, Bangalore, Delhi")
 	private String location;
-
+	
+	@FutureOrPresent(message = "Invalid date! Date cannot be before today")
 	@NotNull(message = "Date cannot be empty")
 	private LocalDate preferredDate;
 	
+	@JsonIgnore
 	@JsonDeserialize(using = LocalTimeDeserializer.class)
 	@JsonSerialize(using = LocalTimeSerializer.class)
+	//@Pattern(regexp = "^(09|1[0-2]|1[0-9]):[0-5][0-9]:[0-5][0-9]$")
+	@NotNull(message = "please enter a time it cannot be null")
 	private LocalTime preferredTime;
 
 	@NotNull(message = "Appointment status cannot be null")
 	private AppointmentStatus appointmentStatus;
 
 	@ManyToOne
-	ServiceCart cart;
-	// List<SalonService> serviceName =new ArrayList<>();
+	ServiceCart cart; 
+	
 	@OneToOne(orphanRemoval = true)
 	Payment payment;
 
