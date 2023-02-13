@@ -13,38 +13,43 @@ import javax.persistence.Id;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
+import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Pattern;
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.datatype.jsr310.deser.LocalTimeDeserializer;
 import com.fasterxml.jackson.datatype.jsr310.ser.LocalTimeSerializer;
+
 @Entity
 public class Appointment {
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	private long appointmentId;
-	
-	@NotNull(message = "Location cannot be empty")
+
+	@NotBlank(message = "Location cannot be empty")
+	@Pattern(regexp = "Mumbai|Pune|Bangalore|Delhi|mumbai|pune|bangalore|delhi", message = "Invalid location, valid locations ara Mumbai, Pune, Bangalore, Delhi")
 	private String location;
-	
+
 	@NotNull(message = "Date cannot be empty")
 	private LocalDate preferredDate;
+	
 	@JsonDeserialize(using = LocalTimeDeserializer.class)
 	@JsonSerialize(using = LocalTimeSerializer.class)
 	private LocalTime preferredTime;
-	
-	@NotNull
+
+	@NotNull(message = "Appointment status cannot be null")
 	private AppointmentStatus appointmentStatus;
 
 	@ManyToOne
 	ServiceCart cart;
-	//List<SalonService> serviceName =new ArrayList<>();
-	@OneToOne( orphanRemoval = true)
+	// List<SalonService> serviceName =new ArrayList<>();
+	@OneToOne(orphanRemoval = true)
 	Payment payment;
-	
+
 	public Appointment(long appointmentId, String location, LocalDate preferredDate, LocalTime preferredTime,
-			ServiceCart cart, Payment payment,AppointmentStatus appointmentStatus) {
+			ServiceCart cart, Payment payment, AppointmentStatus appointmentStatus) {
 		super();
 		this.appointmentId = appointmentId;
 		this.location = location;
@@ -52,58 +57,72 @@ public class Appointment {
 		this.preferredTime = preferredTime;
 		this.cart = cart;
 		this.payment = payment;
-		this.appointmentStatus=appointmentStatus;
+		this.appointmentStatus = appointmentStatus;
 	}
+
 	public Appointment() {
 		super();
 		// TODO Auto-generated constructor stub
 	}
+
 	public long getAppointmentId() {
 		return appointmentId;
 	}
+
 	public void setAppointmentId(long appointmentId) {
 		this.appointmentId = appointmentId;
 	}
+
 	public String getLocation() {
 		return location;
 	}
+
 	public void setLocation(String location) {
 		this.location = location;
 	}
+
 	public LocalDate getPreferredDate() {
 		return preferredDate;
 	}
+
 	public void setPreferredDate(LocalDate preferredDate) {
 		this.preferredDate = preferredDate;
 	}
+
 	public LocalTime getPreferredTime() {
 		return preferredTime;
 	}
+
 	public void setPreferredTime(LocalTime preferredTime) {
 		this.preferredTime = preferredTime;
 	}
+
 	public Payment getPayment() {
 		return payment;
 	}
+
 	public AppointmentStatus getAppointmentStatus() {
 		return appointmentStatus;
 	}
+
 	public void setAppointmentStatus(AppointmentStatus appointmentStatus) {
 		this.appointmentStatus = appointmentStatus;
 	}
+
 	public void setPayment(Payment payment) {
 		this.payment = payment;
 	}
-	
+
 	public ServiceCart getCart() {
 		return cart;
 	}
+
 	public void setCart(ServiceCart cart) {
 		this.cart = cart;
 	}
 
-	public enum AppointmentStatus{
-		OPEN,CLOSE
+	public enum AppointmentStatus {
+		OPEN, CLOSE
 	}
-	
+
 }

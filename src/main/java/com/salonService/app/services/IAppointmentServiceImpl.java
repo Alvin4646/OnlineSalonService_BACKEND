@@ -11,10 +11,12 @@ import org.springframework.stereotype.Service;
 
 import com.salonService.app.entity.Appointment;
 import com.salonService.app.entity.Customer;
+import com.salonService.app.entity.Payment;
 import com.salonService.app.exception.AppointmentException;
 import com.salonService.app.exception.DuplicateAppointmentException;
 import com.salonService.app.repository.IAppointmentRepository;
 import com.salonService.app.repository.ICustomerRepository;
+import com.salonService.app.repository.IPaymentRepository;
 
 @Service
 public class IAppointmentServiceImpl implements IAppointmentService {
@@ -22,20 +24,21 @@ public class IAppointmentServiceImpl implements IAppointmentService {
 	private IAppointmentRepository iappointmentRepo;
 	@Autowired
 	private ICustomerRepository iCustomerRepo;
+	@Autowired
+	private IPaymentRepository paymentRepo;
 
 	@Override
 	public Appointment addAppointment(Appointment appointment) throws DuplicateAppointmentException {
-		
-		
-			Appointment newAppointment = iappointmentRepo.save(appointment);
-			return newAppointment;
-		
+
+		Appointment newAppointment = iappointmentRepo.save(appointment);
+		return newAppointment;
+
 	}
 
 	@Override
 	public String removeAppointment(long id) throws AppointmentException {
 		// iappointmentRepo.deleteById(id);
-		Optional<Appointment> appointment = iappointmentRepo.findById(id); 
+		Optional<Appointment> appointment = iappointmentRepo.findById(id);
 		if (!appointment.isPresent()) {
 			throw new AppointmentException("Unable to delete no appointment with id " + id + " found");
 		}
@@ -52,13 +55,14 @@ public class IAppointmentServiceImpl implements IAppointmentService {
 			throw new AppointmentException("Could not update!! No appointment with id " + id + " found");
 		}
 		Appointment updatedAppointment = existingAppointment.get();
-		updatedAppointment.setAppointmentId(appointments.getAppointmentId());
+		//updatedAppointment.setAppointmentId(appointments.getAppointmentId());
 		updatedAppointment.setLocation(appointments.getLocation());
 		updatedAppointment.setPreferredDate(appointments.getPreferredDate());
 		updatedAppointment.setPreferredTime(appointments.getPreferredTime());
-		updatedAppointment.setCart(appointments.getCart());
-		updatedAppointment.setPayment(appointments.getPayment());
-		
+		updatedAppointment.setAppointmentStatus(appointments.getAppointmentStatus());
+		//updatedAppointment.setCart(appointments.getCart());
+		//updatedAppointment.setPayment(appointments.getPayment());
+
 		return iappointmentRepo.save(updatedAppointment);
 	}
 
@@ -112,6 +116,17 @@ public class IAppointmentServiceImpl implements IAppointmentService {
 		foundCustomer.getAppointments().add(newAppointment);
 		iCustomerRepo.save(foundCustomer);
 		return newAppointment;
+	}
+
+	@Override
+	public Payment removePaymenttByid(long aid) throws AppointmentException {
+		Appointment app = getAppointmentById(aid);
+		Payment pay = app.getPayment();
+		app.setPayment(null);
+		paymentRepo.delete(pay);
+		iappointmentRepo.save(app);
+		return pay;
+
 	}
 
 }

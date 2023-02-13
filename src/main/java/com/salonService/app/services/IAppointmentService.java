@@ -4,6 +4,7 @@ import java.time.LocalDate;
 import java.util.List;
 
 import com.salonService.app.entity.Appointment;
+import com.salonService.app.entity.Payment;
 import com.salonService.app.exception.AppointmentException;
 import com.salonService.app.exception.DuplicateAppointmentException;
 
@@ -24,4 +25,6 @@ public interface IAppointmentService {
 	public Appointment updateAppointmentDate(long id,LocalDate preferredDate)throws AppointmentException;
 	
 	public List<Appointment> getAppointmentByDate(LocalDate date);
+	
+	public Payment removePaymenttByid(long aid) throws AppointmentException ;
 }
