@@ -21,13 +21,14 @@ import com.salonService.app.entity.Appointment;
 import com.salonService.app.entity.Appointment.AppointmentStatus;
 import com.salonService.app.entity.Customer;
 import com.salonService.app.entity.Payment;
+import com.salonService.app.entity.SalonService;
 import com.salonService.app.entity.ServiceCart;
 import com.salonService.app.exception.AppointmentException;
 import com.salonService.app.repository.IAppointmentRepository;
 import com.salonService.app.repository.ICustomerRepository;
 import com.salonService.app.services.IAppointmentService;
 
-@SpringBootTest 
+@SpringBootTest
 class AppointmentServiceTest {
 
 	@Autowired
@@ -56,7 +57,7 @@ class AppointmentServiceTest {
 	void addAppointmentToCustomerTest() throws Exception {
 		long id = 100;
 		List<Appointment> app = new ArrayList<>();
-		Customer cust = new Customer(100, "alvin", "alvin@email.com", "pwd", 898, date, app, cart, "address");
+		Customer cust = new Customer(100, "alvin", "alvin@email.com", "pwd", "898", date, app, cart, "address");
 		cust.getAppointments().add(appointment);
 		when(iCustomerRepository.findById(100)).thenReturn(Optional.of(cust));
 		when(repository.save(appointment)).thenReturn(appointment);
@@ -128,86 +129,164 @@ class AppointmentServiceTest {
 
 	@Test
 	void getAllAppointments() throws AppointmentException {
-		assertNotNull(iAppointmentService.getAllAppointments());
+		List<Appointment> app = new ArrayList<>();
+		app.add(appointment);
+		when(repository.findAll()).thenReturn(app);
+		assertEquals(app, iAppointmentService.getAllAppointments());
 	}
-	
+
 	@Test
-	void getAllAppointmentsExceptionTest()  {
-		String msg=null;
-		List<Appointment> app=null;
+	void getAllAppointmentsExceptionTest() {
+		String msg = null;
+		List<Appointment> app = new ArrayList<>();
 		when(repository.findAll()).thenReturn(app);
 		try {
-		iAppointmentService.getAllAppointments();
-		}catch (Exception e) {
-			msg=e.getMessage();
+			iAppointmentService.getAllAppointments();
+		} catch (Exception e) {
+			msg = e.getMessage();
 		}
-		assertEquals("No appointments found!",msg);
+		assertEquals("No appointments found!", msg);
 	}
 
 	@Test
 	void getAppointmentByDateTest() throws AppointmentException {
 		LocalDate date = LocalDate.parse("2023-02-10");
 		appointment.setPreferredDate(date);
-		List<Appointment> app=new ArrayList<Appointment>();
+		List<Appointment> app = new ArrayList<Appointment>();
 		app.add(appointment);
 		when(repository.findByPreferredDate(date)).thenReturn(app);
 		assertNotNull(iAppointmentService.getAppointmentByDate(date));
 	}
-	
+
 	@Test
-	void getAppointmentsByDateExceptionTest()  {
-		String msg=null;
+	void getAppointmentsByDateExceptionTest() {
+		String msg = null;
 		LocalDate date = LocalDate.parse("2023-02-11");
-		List<Appointment> app=new ArrayList<>();
+		List<Appointment> app = new ArrayList<>();
 		when(repository.findByPreferredDate(date)).thenReturn(app);
 		try {
-		iAppointmentService.getAppointmentByDate(date);
-		}catch (Exception e) {
-			msg=e.getMessage();
+			iAppointmentService.getAppointmentByDate(date);
+		} catch (Exception e) {
+			msg = e.getMessage();
 		}
-		assertEquals("No appointment with this date " + date + " found",msg);
+		assertEquals("No appointment with this date " + date + " found", msg);
 	}
 
 	@Test
 	void getOpenAppointmentsTest() throws AppointmentException {
+		List<Appointment> app = new ArrayList<>();
+		app.add(appointment);
+		when(repository.findByAppointmentStatus(AppointmentStatus.OPEN)).thenReturn(app);
 		assertNotNull(iAppointmentService.getOpenAppointments());
 	}
-	
+
 	@Test
-	void getOpenAppointmentsExceptionTest()  {
-		String msg=null;
-		List<Appointment> app=null;
+	void getOpenAppointmentsExceptionTest() {
+		String msg = null;
+		List<Appointment> app = new ArrayList<>();
 		when(repository.findByAppointmentStatus(AppointmentStatus.OPEN)).thenReturn(app);
 		try {
-		iAppointmentService.getOpenAppointments();
-		}catch (Exception e) {
-			msg=e.getMessage();
+			iAppointmentService.getOpenAppointments();
+		} catch (Exception e) {
+			msg = e.getMessage();
 		}
-		assertEquals("No open appointments found !",msg);
-	}
-	@Test
-	public void testRemoveAppointmentByid_success() throws AppointmentException {
-	int cid = 1;
-	long aid = 100;
-	Customer customer = new Customer();
-	customer.setUserId(cid);
-	List<Appointment> appointments = new ArrayList<Appointment>();
-	Appointment appointment = new Appointment();
-	appointment.setAppointmentId(aid);
-	appointments.add(appointment);
-	customer.setAppointments(appointments);
-	when(iCustomerRepository.findById(cid)).thenReturn(Optional.of(customer));
-	Appointment appointmentRemoved = iAppointmentService.removeAppointmentByid(cid, aid);
-	assertEquals(aid, appointmentRemoved.getAppointmentId());
-	verify(iCustomerRepository, times(1)).save(customer);
+
+		assertEquals("No open appointments found !", msg);
 	}
 
-//	@Test(expected=AppointmentException.class)
-//	public void testRemoveAppointmentByid_failure() throws AppointmentException {
-//	int cid = 1;
-//	long aid = 100;
-//	when(iCustomerRepo.findById(cid)).thenReturn(java.util.Optional.empty());
-//	iAppointmentServiceImpl.removeAppointmentByid(cid, aid);
-//	}
-	
+	@Test
+	public void testRemoveAppointmentByid() throws AppointmentException {
+		int cid = 1;
+		long aid = 100;
+		Customer customer = new Customer();
+		customer.setUserId(cid);
+		List<Appointment> appointments = new ArrayList<Appointment>();
+		Appointment appointment = new Appointment();
+		appointment.setAppointmentId(aid);
+		appointments.add(appointment);
+		customer.setAppointments(appointments);
+		when(iCustomerRepository.findById(1)).thenReturn(Optional.of(customer));
+		when(iCustomerRepository.findById(cid)).thenReturn(Optional.of(customer));
+		Appointment appointmentRemoved = iAppointmentService.removeAppointmentByid(cid, aid);
+		assertEquals(aid, appointmentRemoved.getAppointmentId());
+		verify(iCustomerRepository, times(1)).save(customer);
+	}
+
+	@Test
+	public void testRemoveAppointmentByid_failure() throws AppointmentException {
+		int cid = 1;
+		long aid = 100;
+		String msg = null;
+		try {
+			when(iCustomerRepository.findById(cid)).thenReturn(java.util.Optional.empty());
+			iAppointmentService.removeAppointmentByid(cid, aid);
+		} catch (Exception e) {
+			msg = e.getMessage();
+		}
+		assertEquals("Unable to delete no appointment with id " + aid + " found", msg);
+	}
+
+	@Test
+	public void testGetServiceList() throws AppointmentException {
+		long appointmentId = 1L;
+
+		// Create a test appointment
+		Appointment appointment = new Appointment();
+		appointment.setAppointmentId(appointmentId);
+		ServiceCart cart = new ServiceCart();
+		List<SalonService> services = new ArrayList<>();
+		SalonService service1 = new SalonService();
+		service1.setServiceId(1L);
+		service1.setSeviceName("Service 1");
+		services.add(service1);
+		cart.setServiceList(services);
+		appointment.setCart(cart);
+
+		// Mock the repository method to return the test appointment
+		when(repository.findById(appointmentId)).thenReturn(Optional.of(appointment));
+
+		// Call the service method
+		List<SalonService> result = iAppointmentService.getServiceList(appointmentId);
+
+		// Verify the result
+		assertEquals(services, result);
+	}
+
+	@Test
+	public void testGetServiceListException() throws AppointmentException {
+		long appointmentId = 1L;
+
+		Appointment appointment = new Appointment();
+		appointment.setAppointmentId(appointmentId);
+		when(repository.findById(appointmentId)).thenReturn(Optional.of(appointment));
+		String msg = null;
+		try {
+			iAppointmentService.getServiceList(appointmentId);
+		} catch (Exception e) {
+			msg = e.getMessage();
+		}
+
+		assertEquals("No cart found for appointment", msg);
+	}
+
+	@Test
+	public void testGetServiceListEmptyException() throws AppointmentException {
+		long appointmentId = 1L;
+
+		// Create a test appointment with an empty cart
+		Appointment appointment = new Appointment();
+		appointment.setAppointmentId(appointmentId);
+		ServiceCart cart = new ServiceCart();
+		cart.setServiceList(new ArrayList<>());
+		appointment.setCart(cart);
+		when(repository.findById(appointmentId)).thenReturn(Optional.of(appointment));
+		String msg = null;
+		try {
+			iAppointmentService.getServiceList(appointmentId);
+		} catch (Exception e) {
+			msg = e.getMessage();
+		}
+		assertEquals("No services found", msg);
+	}
+
 }

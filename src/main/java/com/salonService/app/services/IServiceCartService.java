@@ -5,16 +5,20 @@ import java.util.List;
 import com.salonService.app.entity.Customer;
 import com.salonService.app.entity.SalonService;
 import com.salonService.app.entity.ServiceCart;
+import com.salonService.app.exception.CartNotFoundException;
 import com.salonService.app.exception.SalonServiceNotFoundException;
+import com.salonService.app.exception.ServiceAlreadyExistsException;
 
 public interface IServiceCartService {
-	public ServiceCart addServiceToCart(SalonService service,int custId)throws SalonServiceNotFoundException ;
+	public ServiceCart getServiceCartByid(Long orderId) throws CartNotFoundException;
+	public List<ServiceCart> getAllServicesInCart() throws SalonServiceNotFoundException, CartNotFoundException ;
+	public ServiceCart addServiceToCart(SalonService service,Long id) throws CartNotFoundException, SalonServiceNotFoundException;
+	public SalonService deleteServiceById(Long serviceId, Long id);
+	
+	
+	
+	public String deleteCartById(Long orderId) throws CartNotFoundException ;
+	//public ServiceCart addServiceById(Long serviceId, Long id);
+	
 
-	public String deleteServiceById(Long orderId) ;
-
-	public ServiceCart updateCartService(Long orderId, ServiceCart order) ;
-
-	public ServiceCart getServiceCartByid(Long orderId);
-
-	public List<ServiceCart> getAllServicesInCart() ;
 }

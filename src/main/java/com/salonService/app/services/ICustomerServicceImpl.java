@@ -8,9 +8,12 @@ import org.springframework.stereotype.Service;
 
 import com.salonService.app.entity.Appointment;
 import com.salonService.app.entity.Customer;
+import com.salonService.app.entity.ServiceCart;
 import com.salonService.app.exception.AppointmentException;
+import com.salonService.app.exception.CustomerNotFoundException;
 import com.salonService.app.repository.IAppointmentRepository;
 import com.salonService.app.repository.ICustomerRepository;
+import com.salonService.app.repository.IServiceCartRepository;
 
 @Service
 public class ICustomerServicceImpl implements ICustomerService {
@@ -20,23 +23,33 @@ private ICustomerRepository iCustomerRepository ;
 @Autowired
 private IAppointmentService iAppointmentService;
 
+@Autowired
+private IServiceCartRepository iServiceCartRepository; 
+
 	@Override
-	public Customer getCustomer(Integer userId) {
+	public Customer getCustomer(Integer userId) throws CustomerNotFoundException {
 		Optional<Customer> optCustomer = iCustomerRepository.findById(userId);	
 		if(optCustomer.isPresent()) {
 			return optCustomer.get();
-		}
-		else 
-		return null;
+		} 
+		else{
+			throw new CustomerNotFoundException("Customer not found by "+userId+ " id");
+			}
 	}
 
 	@Override
 	public Customer addCustomer(Customer customer) {
-		return iCustomerRepository.save(customer);
+		Customer customerToAdd= iCustomerRepository.save(customer);
+		long id=customer.getUserId();
+		ServiceCart cart=new ServiceCart(id,0D);
+		iServiceCartRepository.save(cart);
+		customer.setCart(cart);
+		iCustomerRepository.save(customer);
+		return customerToAdd;
 	}
 
 	@Override
-	public Customer updateCustomer(Integer userId, Customer customer) {
+	public Customer updateCustomer(Integer userId, Customer customer) throws CustomerNotFoundException {
 		if(iCustomerRepository.existsById(userId)) {
 			Customer customerToBeUpdated = iCustomerRepository.findById(userId).get();
 			customerToBeUpdated.setAddress(customer.getAddress());
@@ -47,18 +60,28 @@ private IAppointmentService iAppointmentService;
 			iCustomerRepository.save(customerToBeUpdated);
 			return customerToBeUpdated;
 		}
-		return null;
+		else {
+			throw new CustomerNotFoundException("Customer not found by "+userId +" id");
+		}
 	}
 
 	@Override
-	public Customer deleteCustomer(Integer userId) {
+	public Customer deleteCustomer(Integer userId) throws CustomerNotFoundException {
 		Optional<Customer> customerToBeDeleted = iCustomerRepository.findById(userId);
 		if(customerToBeDeleted.isPresent()) {
+			long id=userId;
+			ServiceCart cart=iServiceCartRepository.findById(id).get();
+			customerToBeDeleted.get().setCart(null);
+	List<Appointment>list= customerToBeDeleted.get().getAppointments();
+			
+			customerToBeDeleted.get().getAppointments().removeAll(list);
+			iCustomerRepository.save(customerToBeDeleted.get());
+			iServiceCartRepository.delete(cart);
 			iCustomerRepository.deleteById(userId);
 			return customerToBeDeleted.get();
 		}
 		else {
-		return null;
+			throw new CustomerNotFoundException("Customer not found by "+userId+" id");
 		}
 	}
  
@@ -69,10 +92,16 @@ private IAppointmentService iAppointmentService;
 	}
 	
 	@Override
-	public List<Appointment> getAllAppointmentsForCustomer(Integer userId){
+	public List<Appointment> getAllAppointmentsForCustomer(Integer userId) throws CustomerNotFoundException{
 		//return iAppointmentServiceImpl.getAppointmentById(userId);
 		Customer customer=getCustomer(userId);
-		
+		if(customer==null) {
+			throw new CustomerNotFoundException("No customer with this id found");
+		}
+		List<Appointment> list=customer.getAppointments();
+		if(list.isEmpty()) {
+			throw new CustomerNotFoundException("No appointments for customer found");
+		}
 		return customer.getAppointments();
 	}
 	
@@ -81,7 +110,7 @@ private IAppointmentService iAppointmentService;
 		Appointment appointmentToRemove=null;
 		for(Appointment appointment:cust.getAppointments()) {
 			if(appointment.getAppointmentId()==aid) {
-				appointmentToRemove=appointment;
+				appointmentToRemove=appointment; 
 				break;
 			}
 			

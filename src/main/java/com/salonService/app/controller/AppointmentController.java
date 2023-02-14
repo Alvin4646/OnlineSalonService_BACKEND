@@ -31,7 +31,7 @@ public class AppointmentController {
 			throws Exception {
 		return this.iAppointmentService.addAppointmentToCustomer(appointment, cid);
 	}
-
+ 
 	@GetMapping("/appointment/{aid}")
 	public Appointment findAppointmentById(@PathVariable Long aid) throws AppointmentException {
 		return iAppointmentService.getAppointmentById(aid);
@@ -43,24 +43,24 @@ public class AppointmentController {
 
 	}
 
-	@GetMapping("/appointmentDt/{date}")
+	@GetMapping("/appointment/date/{date}")
 	public List<Appointment> findAppointmentByDate(@PathVariable String date) throws AppointmentException {
 		LocalDate dateToFind = LocalDate.parse(date);
 		return iAppointmentService.getAppointmentByDate(dateToFind);
 	}
 
-	@PutMapping("/Appointment/{id}")
+	@PutMapping("/appointment/{id}")
 	public Appointment updateAppointments(@Valid @RequestBody Appointment appointment, @PathVariable Long id)
 			throws AppointmentException {
 		return iAppointmentService.updateAppointment(id, appointment);
 	}
 
-	@GetMapping("/openAppointments")
+	@GetMapping("/appointments/open")
 	public List<Appointment> getOpenAppointments() throws AppointmentException {
 		return iAppointmentService.getOpenAppointments();
 	}
 
-	@PutMapping("/updateAppointmentDate/{id}")
+	@PutMapping("/appointment/date/{id}")
 	public Appointment updateAppointmentDate(@RequestBody LocalDate preferredDate, @PathVariable Long id)
 			throws AppointmentException {
 		return iAppointmentService.updateAppointmentDate(id, preferredDate);

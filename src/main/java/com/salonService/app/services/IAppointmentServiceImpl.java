@@ -124,7 +124,7 @@ public class IAppointmentServiceImpl implements IAppointmentService {
 		throw new AppointmentException("No appointment with this date " + date + " found");
 	}
 
-	@Override
+	@Override 
 	public List<Appointment> getAllAppointments()throws AppointmentException {
 		List<Appointment> foundAppointments=iappointmentRepo.findAll();
 		if(!foundAppointments.isEmpty()) {
@@ -150,6 +150,7 @@ public class IAppointmentServiceImpl implements IAppointmentService {
 		}
 		Customer foundCustomer = customer.get();
 		Appointment newAppointment = addAppointment(appointment);
+		newAppointment.setCart(foundCustomer.getCart());
 		foundCustomer.getAppointments().add(newAppointment);
 		iCustomerRepo.save(foundCustomer);
 		return newAppointment; 
@@ -159,7 +160,7 @@ public class IAppointmentServiceImpl implements IAppointmentService {
 	public Payment removePaymenttByid(long aid) throws AppointmentException {
 		Appointment app = getAppointmentById(aid); 
 		Payment pay = app.getPayment(); 
-		if (pay != null) { 
+		if (pay != null) {  
 			app.setPayment(null); 
 			paymentRepo.delete(pay); 
 			iappointmentRepo.save(app); 
@@ -189,7 +190,7 @@ public class IAppointmentServiceImpl implements IAppointmentService {
 	public List<SalonService> getServiceList(long aid) throws AppointmentException{
 		Appointment appointment=getAppointmentById(aid);
 		ServiceCart  cart=appointment.getCart();
-		if(cart==null) {
+		if(cart==null) { 
 			throw new AppointmentException("No cart found for appointment");
 		}
 		List<SalonService> service=cart.getServiceList();

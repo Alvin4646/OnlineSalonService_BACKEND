@@ -24,33 +24,33 @@ public class PaymentController {
 	private IPaymentService iPaymentService;
 	@Autowired
 	private IAppointmentService iAppointmentService;
-
+ 
 //	@PostMapping("/payment")
 //	public Payment addPayment(@RequestBody Payment payment) {
 //		return this.iPaymentService.addPayment(payment);
 //
 //	}
 	@PostMapping("/payment/{id}")
-	public Payment addAppointmentToCustomer(@RequestBody Payment appointment,@PathVariable long id) {
-		return this.iPaymentService.addPaymentToAppointment(appointment, id);
+	public Payment addAppointmentToCustomer(@RequestBody Payment appointment,@PathVariable long id) throws PaymentException {
+		return this.iPaymentService.addPaymentToAppointment(appointment, id); 
 	}
 
 	
-	public void deletePayment(@PathVariable int id) throws PaymentException {
-		 this.iPaymentService.deletePayment(id);
-	}
+//	public void deletePayment(@PathVariable int id) throws PaymentException {
+//		 this.iPaymentService.deletePayment(id); 
+//	}
 	@DeleteMapping("/deletePayment/{appointmentId}")
 	public Payment removePaymentFromAppointment(@PathVariable Long appointmentId) throws AppointmentException {
 		return iAppointmentService.removePaymenttByid(appointmentId);
 	}
 
 	@GetMapping("/payments")
-	public List<Payment> findAllPayment() {
+	public List<Payment> findAllPayment() throws PaymentException {
 		return iPaymentService.getAllPaymentDetails();
 	}
 
 	@PutMapping("/updatepayment/{id}")
-	public Payment updateEmployee(@RequestBody Payment payment, @PathVariable long id) {
+	public Payment updateEmployee(@RequestBody Payment payment, @PathVariable long id) throws PaymentException {
 		return iPaymentService.updatePayment(id, payment);
 	}
 

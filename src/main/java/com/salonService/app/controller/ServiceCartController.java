@@ -13,40 +13,53 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.salonService.app.entity.Appointment;
+import com.salonService.app.entity.SalonService;
 import com.salonService.app.entity.ServiceCart;
+import com.salonService.app.exception.CartNotFoundException;
+import com.salonService.app.exception.SalonServiceNotFoundException;
+import com.salonService.app.exception.ServiceAlreadyExistsException;
+import com.salonService.app.repository.ISalonRepository;
+import com.salonService.app.repository.IServiceCartRepository;
 import com.salonService.app.services.IServiceCartService;
-
 
 @RestController
 @RequestMapping("/servicecart")
 
 public class ServiceCartController {
-	
-	@Autowired
+
+	@Autowired 
 	IServiceCartService serviceCartService;
-	
-//	@PostMapping("/addToCart")
-//	public ServiceCart addToCart(@RequestBody ServiceCart serviceCart) {
-//	return serviceCartService.addServiceToCart(serviceCart);	
-//	}
-////	
-	@GetMapping("/getCart/{id}")
-	public ServiceCart getCartById(@PathVariable long id) {
+	IServiceCartRepository serviceRepo;  
+ 
+	@PostMapping("/cart/add")
+	public ServiceCart addToCart(@RequestBody SalonService service, Long id) throws CartNotFoundException, SalonServiceNotFoundException {
+		return serviceCartService.addServiceToCart(service, id);
+	}
+
+	@DeleteMapping("/cart/delete/service/{serviceId}/{id}")
+	public SalonService deleteServiceById(@PathVariable Long serviceId, Long id) {
+		return serviceCartService.deleteServiceById(serviceId, id);
+	}
+
+	@GetMapping("/cart/{id}")
+	public ServiceCart getCartById(@PathVariable long id) throws CartNotFoundException { 
 		return serviceCartService.getServiceCartByid(id);
 	}
 
-	@DeleteMapping("deleteCart/{id}")
-	public String deleteServiceById(@PathVariable long id) {
-		return serviceCartService.deleteServiceById(id);
-	}
-	
-	@GetMapping("/getCart")
-	public List<ServiceCart> findAllCart() {
+	@GetMapping("/cart/all")
+	public List<ServiceCart> findAllCart() throws SalonServiceNotFoundException, CartNotFoundException {
 		return serviceCartService.getAllServicesInCart();
 	}
-//	@PutMapping("/updateCart/{id}")
-//	public String ServiceCart(@RequestBody Appointment appointment,@PathVariable long id) {
-//		return serviceCartService.updateCartService(id, appointment);
+
+//	@DeleteMapping("deleteCart/{id}")
+//	public String deleteServiceById(@PathVariable long id) {
+//		return serviceCartService.deleteServiceById(id, id);
+//	}
+//	
+
+//	@PostMapping("/add_To_Cart_by_id")
+//	public ServiceCart addServiceById(@PathVariable Long serviceId, Long id) {
+//		return serviceCartService.addServiceById(serviceId,id);
 //	}
 
 }

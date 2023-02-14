@@ -12,9 +12,9 @@ public interface IPaymentService {
 
 	public Payment deletePayment(long paymentId)throws PaymentException ;
 
-	public Payment updatePayment(long paymentId, Payment payment) ;
+	public Payment updatePayment(long paymentId, Payment payment) throws PaymentException ;
 
-	public List<Payment> getAllPaymentDetails() ;
+	public List<Payment> getAllPaymentDetails() throws PaymentException ;
 	
-	public Payment addPaymentToAppointment(Payment payment,long id);
+	public Payment addPaymentToAppointment(Payment payment,long id) throws PaymentException;
 }

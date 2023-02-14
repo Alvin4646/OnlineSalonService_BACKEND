@@ -35,7 +35,7 @@ public class Appointment {
 	@Pattern(regexp = "Mumbai|Pune|Bangalore|Delhi|mumbai|pune|bangalore|delhi", message = "Invalid location, valid locations ara Mumbai, Pune, Bangalore, Delhi")
 	private String location;
 	
-	@FutureOrPresent(message = "Invalid date! Date cannot be before today")
+	@FutureOrPresent(message = "Invalid date! Date cannot be past date")
 	@NotNull(message = "Date cannot be empty")
 	private LocalDate preferredDate;
 	
@@ -43,7 +43,7 @@ public class Appointment {
 	@JsonDeserialize(using = LocalTimeDeserializer.class)
 	@JsonSerialize(using = LocalTimeSerializer.class)
 	//@Pattern(regexp = "^(09|1[0-2]|1[0-9]):[0-5][0-9]:[0-5][0-9]$")
-	@NotNull(message = "please enter a time it cannot be null")
+	@NotNull(message = "please enter a time it cannot be null")	
 	private LocalTime preferredTime;
 
 	@NotNull(message = "Appointment status cannot be null")

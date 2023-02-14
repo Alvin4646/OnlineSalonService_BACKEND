@@ -1,12 +1,14 @@
 package com.salonService.app.entity;
 
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.OneToOne;
 
 @Entity
 public class Payment {
 	@Id
+	@GeneratedValue
 	private Long paymentId;
 	private ModeOfPayment type;
 	private PaymentStatus status;	

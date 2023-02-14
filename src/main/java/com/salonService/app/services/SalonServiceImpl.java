@@ -17,46 +17,53 @@ import com.salonService.app.repository.ISalonRepository;
 @Service
 @Transactional
 
-public class SalonServiceImpl implements ISalonService{
+public class SalonServiceImpl implements ISalonService {
 	@Autowired
 	private ISalonRepository salonRepository;
-	@Override
+
+	@Override 
 	public SalonService addService(SalonService salonService) throws ServiceAlreadyExistsException {
 		Optional<SalonService> salon = salonRepository.findById(salonService.getServiceId());
-    	if(salon.isPresent()) {
-    		throw new ServiceAlreadyExistsException("SERVICE ALREADY EXISTS");
-    	}
+		if (salon.isPresent()) {
+			throw new ServiceAlreadyExistsException("SERVICE ALREADY EXISTS");
+		}
 		salonRepository.save(salonService);
 		return salonService;
-		
 	}
 
 	@Override
 	public void removeService(Long serviceId) throws SalonServiceNotFoundException {
 		Optional<SalonService> salon = salonRepository.findById(serviceId);
-		salon.orElseThrow(() -> new SalonServiceNotFoundException("Salon Service NOT FOUND"));
+		salon.orElseThrow(() -> new SalonServiceNotFoundException("Salon Service NOT FOUND with id " + serviceId));
 		salonRepository.deleteById(serviceId);
-		
+
 	}
 
 	@Override
 	public SalonService updateService(Long serviceId, SalonService salonService) throws SalonServiceNotFoundException {
 		Optional<SalonService> salon = salonRepository.findById(serviceId);
-		salonService = salon.orElseThrow(() -> new SalonServiceNotFoundException("Salon Service NOT FOUND"));
-		salonService.setSeviceName(salonService.getSeviceName());
-       return salonService;
+		if (salon.isPresent()) {
+			SalonService service = salon.get();
+			service.setSeviceName(salonService.getSeviceName());
+			service.setServicePrice(salonService.getServicePrice());
+			service.setServiceDuration(salonService.getServiceDuration());
+			return salonRepository.save(service);
+		} else {
+			throw new SalonServiceNotFoundException("Salon service not found");
+		}
+
 	}
 
 	@Override
 	public SalonService getService(Long serviceId) throws SalonServiceNotFoundException {
 		Optional<SalonService> optional = salonRepository.findById(serviceId);
-		SalonService s = optional.orElseThrow(() -> new SalonServiceNotFoundException("Service SalonService NOT FOUND"));
+		SalonService s = optional.orElseThrow(() -> new SalonServiceNotFoundException("Salon Service NOT FOUND"));
 		return s;
 	}
 
 	@Override
 	public List<SalonService> getAllServices() throws SalonServiceNotFoundException {
-		Iterable<SalonService> order2 = salonRepository.findAll(); 
+		Iterable<SalonService> order2 = salonRepository.findAll();
 		List<SalonService> s3 = new ArrayList<>();
 		order2.forEach(order -> {
 			s3.add(order);
@@ -68,25 +75,25 @@ public class SalonServiceImpl implements ISalonService{
 
 	@Override
 	public List<SalonService> getSeviceByName(String seviceName) throws SalonServiceNotFoundException {
-		Iterable<SalonService> order2 = salonRepository.findBySeviceName(seviceName); 
+		Iterable<SalonService> order2 = salonRepository.findBySeviceName(seviceName);
 		List<SalonService> s3 = new ArrayList<>();
 		order2.forEach(order -> {
 			s3.add(order);
 		});
 		if (s3.isEmpty())
-			throw new SalonServiceNotFoundException("Salon Service NOT FOUND");
+			throw new SalonServiceNotFoundException("Salon Service NOT FOUND with name " + seviceName);
 		return s3;
 	}
-//
+
 	@Override
 	public List<SalonService> getServiceByPrice(String servicePrice) throws SalonServiceNotFoundException {
-		Iterable<SalonService> order2 = salonRepository.findByServicePrice(servicePrice); 
+		Iterable<SalonService> order2 = salonRepository.findByServicePrice(servicePrice);
 		List<SalonService> s3 = new ArrayList<>();
 		order2.forEach(order -> {
 			s3.add(order);
 		});
 		if (s3.isEmpty())
-			throw new SalonServiceNotFoundException("Salon Service NOT FOUND");
+			throw new SalonServiceNotFoundException("Salon Service NOT FOUND with price " + servicePrice);
 		return s3;
 	}
 
@@ -98,10 +105,8 @@ public class SalonServiceImpl implements ISalonService{
 			s3.add(order);
 		});
 		if (s3.isEmpty())
-			throw new SalonServiceNotFoundException("Salon Service NOT FOUND");
+			throw new SalonServiceNotFoundException("Salon Service NOT FOUND with duration " + serviceDuration);
 		return s3;
 	}
-
-	
 
 }

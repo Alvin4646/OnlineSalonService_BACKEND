@@ -1,48 +1,42 @@
 package com.salonService.app.entity;
 
+import java.util.Objects;
+
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Min;
+import javax.validation.constraints.Pattern;
 @Entity
 public class Admin {
+	@GeneratedValue(strategy = GenerationType.AUTO)
 	@Id
-	@NotNull
-	private String adminId;
-	
-	private String adminPassword;
-
+	@Min(value = 1,message = "id value must be > 0")
+	Long id;
+	@Pattern(regexp = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@$!%*?&])[A-Za-z\\d@$!%*?&]{6,10}$",message = "pwd must Minimum 6 and maximum 10 characters, at least one uppercase letter, one lowercase letter, one number and one special character")
+	String password;
 	public Admin() {
 		super();
 		// TODO Auto-generated constructor stub
 	}
-
-	public Admin(String userId,String adminPassword) {
+	public Admin(Long id, String password) {
 		super();
-		this.adminId = userId;
-		this.adminPassword=adminPassword;
+		this.id = id;
+		this.password = password;
+	}
+	public Long getId() {
+		return id;
+	}
+	public void setId(Long id) {
+		this.id = id;
+	}
+	public String getPassword() {
+		return password;
+	}
+	public void setPassword(String password) {
+		this.password = password;
 	}
 
-	public String getAdminId() {
-		return adminId;
-	}
-
-	public void setAdminId(String userId) {
-		this.adminId = userId;
-	}
-
-	public String getAdminPassword() {
-		return adminPassword;
-	}
-
-	public void setAdminPassword(String adminPassword) {
-		this.adminPassword = adminPassword;
-	}
-
-	@Override
-	public String toString() {
-		return "Admin [adminId=" + adminId + ", adminPassword=" + adminPassword + "]";
-	}
-
-
-
+	
 }

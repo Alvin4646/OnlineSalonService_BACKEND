@@ -3,6 +3,7 @@ package com.salonService.app.controller;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -18,6 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.salonService.app.entity.Appointment;
 import com.salonService.app.entity.Customer;
 import com.salonService.app.exception.AppointmentException;
+import com.salonService.app.exception.CustomerNotFoundException;
 import com.salonService.app.services.ICustomerService;
 
 @RestController
@@ -26,12 +28,12 @@ public class CustomerController {
 	private ICustomerService iCustomerService;
 
 	@PostMapping("/customer")
-	public Customer addCustomer(@RequestBody Customer customer) {
+	public Customer addCustomer(@Valid @RequestBody Customer customer) { 
 		return this.iCustomerService.addCustomer(customer);
 	}
-
-	@GetMapping("/customer/{aid}")
-	public ResponseEntity<?> getCustomer(@PathVariable("aid") Integer custId, HttpServletRequest request) {
+ 
+	@GetMapping("/customer/{aid}") 
+	public ResponseEntity<?> getCustomer(@PathVariable("aid") Integer custId, HttpServletRequest request) throws CustomerNotFoundException {
 
 		Customer customer = iCustomerService.getCustomer(custId); 
 		if (customer == null) {
@@ -39,8 +41,8 @@ public class CustomerController {
 		}
 		return new ResponseEntity<Customer>(customer, HttpStatus.OK);
 	}
-	@DeleteMapping("/deleteCustomer/{cid}")
-	public ResponseEntity<String> removeCustomer(@PathVariable("aid") Integer custId, HttpServletRequest request) {
+	@DeleteMapping("/customer/delete/{cid}")
+	public ResponseEntity<String> removeCustomer(@PathVariable("cid") Integer custId, HttpServletRequest request) throws CustomerNotFoundException {
 		Customer deleteCustomer = iCustomerService.deleteCustomer(custId) ;
 		if(deleteCustomer != null) { 
 			return new ResponseEntity<String>("Customer deleted successfully", HttpStatus.OK);
@@ -63,8 +65,8 @@ public class CustomerController {
 		return iCustomerService.getAllCustomers();
 	}
 
-	@PutMapping("/updateCustomers/{id}")
-	public Customer updateCustomer(@RequestBody Customer customer, @PathVariable Integer id) {
+	@PutMapping("/customers/update/{id}")
+	public Customer updateCustomer(@RequestBody Customer customer, @PathVariable Integer id) throws CustomerNotFoundException {
 		return iCustomerService.updateCustomer(id, customer);
 	}
 //	@PutMapping("/updateCustomers/(id)")
@@ -78,8 +80,8 @@ public class CustomerController {
 //			return new ResponseEntity<String>("Customer failed to update", HttpStatus.NOT_FOUND);
 //	}
 	
-	@GetMapping("/customerAppointments/{id}")
-	public List<Appointment> getAllCustomerAppointments(@PathVariable Integer id){
+	@GetMapping("/customer/appointments/{id}")
+	public List<Appointment> getAllCustomerAppointments(@PathVariable Integer id) throws CustomerNotFoundException{
 		return iCustomerService.getAllAppointmentsForCustomer(id);
 	}
 	@DeleteMapping("/customer/{cid}")

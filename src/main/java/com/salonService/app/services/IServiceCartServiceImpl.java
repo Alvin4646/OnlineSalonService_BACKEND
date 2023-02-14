@@ -1,5 +1,8 @@
 package com.salonService.app.services;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 
@@ -10,7 +13,9 @@ import com.salonService.app.entity.Appointment;
 import com.salonService.app.entity.Customer;
 import com.salonService.app.entity.SalonService;
 import com.salonService.app.entity.ServiceCart;
+import com.salonService.app.exception.CartNotFoundException;
 import com.salonService.app.exception.SalonServiceNotFoundException;
+import com.salonService.app.exception.ServiceAlreadyExistsException;
 import com.salonService.app.repository.ISalonRepository;
 import com.salonService.app.repository.IServiceCartRepository;
 
@@ -22,64 +27,105 @@ public class IServiceCartServiceImpl implements IServiceCartService {
 	@Autowired
 	ICustomerService iCustomerService;
 	@Autowired
-	ISalonService iSalonService;
-	
-	public ServiceCart addServiceToCart(SalonService service,int custId) throws SalonServiceNotFoundException {
-		ServiceCart cart=null;
-		Customer customer = iCustomerService.getCustomer(custId);
-		if (customer==null) {
-		//Exception
-		}
-		SalonService serviceToAdd = iSalonService.getService(service.getServiceId());
-		if (serviceToAdd == null) {
-		//Exception
-		}
-		 
-		if (customer.getCart() == null) {
-		 cart = new ServiceCart();
-		cart.getServiceList().add(service);
-		 
-		cart = serviceRepo.save(cart);
-		customer.setCart(cart);
-		 
-		} else {
-		cart = customer.getCart();
-		cart.getServiceList().add(service);
-		}
-		 
-		return serviceRepo.save(cart);
-
-	}
-	
-	@Override
-	public String deleteServiceById(Long orderId) {
-		serviceRepo.deleteById(orderId);
-		return "Deleted successfully";
-	}
-	
-	@Override
-	public ServiceCart updateCartService(Long id, ServiceCart order) {
-		Optional<ServiceCart>existingCart=serviceRepo.findById(id);
-		if(!existingCart.isPresent()) {
-			//Exception
-		}
-		ServiceCart updatedCart=existingCart.get();
-		updatedCart.setAmount(order.getAmount());
-
-		return updatedCart;
-	}
+	ISalonService iSalonService; 
+	ServiceCart cart;
+	@Autowired 
+	private ISalonRepository salonRepository;
 	
 
+	@Override
+	public ServiceCart addServiceToCart(SalonService service, Long cartId) throws CartNotFoundException, SalonServiceNotFoundException{
+		int count=0;
+		 Optional<ServiceCart> service2 =serviceRepo.findById(cartId);
+		 ServiceCart service1= service2.get();
+		 if(!service2.isPresent()) {
+			 throw new CartNotFoundException("Cart with customer "+cartId+"not found to add service");
+		 }
+		 for(SalonService a: iSalonService.getAllServices())
+			    if(service.getServiceId()==a.getServiceId()){
+			    	count++;
+			} 
+			if(count==0) {
+			   throw new SalonServiceNotFoundException("Service not available right now to add to the cart");	
+			}
+		 
+			service1.getServiceList().add(service); 
+			service1.getServiceList().sort((a,b)->a.getServiceId().compareTo(cartId));
+		Double amount1=serviceRepo.findById(cartId).get().getAmount();
+		Double amount2=amount1+Double.parseDouble(service.getServicePrice());
+		service1.setAmount(amount2);
+		serviceRepo.save(service1);
+		return service1;
+	}
+	
 	
 	@Override
-	public List<ServiceCart> getAllServicesInCart() {
-		// TODO Auto-generated method stub
-		return null;
+	public SalonService deleteServiceById(Long serviceId,Long cartid) {
+		ServiceCart cart=serviceRepo.findById(cartid).get();
+		SalonService serviceToRemove=null;
+		for(SalonService service:cart.getServiceList()) {
+			if(service.getServiceId()==serviceId) {
+				serviceToRemove=service;
+				break;
+			}
+		}
+		if(serviceToRemove!=null) {
+			Double amount1=serviceRepo.findById(cartid).get().getAmount();
+			Double amount2=amount1-Double.parseDouble(serviceToRemove.getServicePrice());
+			cart.setAmount(amount2);
+			cart.getServiceList().remove(serviceToRemove);
+			serviceRepo.save(cart);
+		}
+		return serviceToRemove;
 	}
+//	@Override
+//	public SalonService deleteServiceById(Long serviceId,Long cartid) {
+//		Optional<ServiceCart> optCart=serviceRepo.findById(cartid);
+//		ServiceCart foundCart=optCart.get();
+//		Optional<SalonService> optService=salonRepository.findById(serviceId);
+//		SalonService foundService=optService.get();
+//		
+//		Double amount1=serviceRepo.findById(cartid).get().getAmount();
+//		Double amount2=amount1-Double.parseDouble(foundService.getServicePrice());
+//		foundCart.setAmount(amount2);
+//		
+//		foundCart.getServiceList().remove(foundService);
+//		this.serviceRepo.save(foundCart);
+//		return foundService;
+//	}
+	
+
+
 	@Override
-	public ServiceCart getServiceCartByid(Long orderId) {
+	public String deleteCartById(Long orderId) throws CartNotFoundException {
+//		serviceRepo.deleteById(orderId);
+//		return "Deleted successfully";
+		Optional<ServiceCart> cart = serviceRepo.findById(orderId);
+		if (!cart.isPresent()) {
+			throw new CartNotFoundException("cart with " + orderId + " not found");
+		}
+		else {
+		   serviceRepo.deleteById(orderId);   
+		   return "Deleted successfully"; 
+		}
+	}
+
+	@Override
+	public List<ServiceCart> getAllServicesInCart() throws SalonServiceNotFoundException, CartNotFoundException {
+		List<ServiceCart> list=serviceRepo.findAll();
+		if(list.isEmpty()) {
+			throw new CartNotFoundException("No services found in the cart, Cart is Empty");
+		}
+		return serviceRepo.findAll();
+	}
+	
+	@Override
+	public ServiceCart getServiceCartByid(Long orderId) throws CartNotFoundException {
+		Optional<ServiceCart> cart=serviceRepo.findById(orderId);
+		if(cart.isEmpty()) {
+			throw new CartNotFoundException("No cart with this id found");
+		}
 		return serviceRepo.findById(orderId).get();
 	}
-	
-	
+
 }
