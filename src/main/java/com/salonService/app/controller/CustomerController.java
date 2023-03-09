@@ -8,6 +8,7 @@ import javax.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -20,16 +21,22 @@ import com.salonService.app.entity.Appointment;
 import com.salonService.app.entity.Customer;
 import com.salonService.app.exception.AppointmentException;
 import com.salonService.app.exception.CustomerNotFoundException;
+import com.salonService.app.exception.JwtTokenMalformedException;
+import com.salonService.app.exception.JwtTokenMissingException;
+import com.salonService.app.exception.UserAlreadyExists;
 import com.salonService.app.services.ICustomerService;
+import com.salonService.app.util.JWTUtils;
 
 @RestController
+@CrossOrigin(origins = "http://localhost:4200")
 public class CustomerController {
 	@Autowired
 	private ICustomerService iCustomerService;
 
 	@PostMapping("/customer")
-	public Customer addCustomer(@Valid @RequestBody Customer customer) { 
-		return this.iCustomerService.addCustomer(customer);
+	public Customer addCustomer(@Valid @RequestBody Customer customer) throws UserAlreadyExists { 
+		
+		return this.iCustomerService.addCustomer(customer); 
 	}
  
 	@GetMapping("/customer/{aid}") 
@@ -41,27 +48,20 @@ public class CustomerController {
 		}
 		return new ResponseEntity<Customer>(customer, HttpStatus.OK);
 	}
+
 	@DeleteMapping("/customer/delete/{cid}")
 	public ResponseEntity<String> removeCustomer(@PathVariable("cid") Integer custId, HttpServletRequest request) throws CustomerNotFoundException {
 		Customer deleteCustomer = iCustomerService.deleteCustomer(custId) ;
-		if(deleteCustomer != null) { 
+		if(deleteCustomer != null) {
 			return new ResponseEntity<String>("Customer deleted successfully", HttpStatus.OK);
 		}
 		else
 			return new ResponseEntity<String>("Failed to delete customer", HttpStatus.BAD_REQUEST);
 	}
 
-//	@DeleteMapping("/deleteCustomer/(id)")
-//	public void deleteCustomer(@PathVariable Integer id) {
-//		iCustomerService.deleteCustomer(id);
-//	}
-
-//@GetMapping("/customerById/(id)")
-//public Customer findCustomerById(@PathVariable("id") Integer id) {
-//	return iCustomerService.getCustomer(id);
-//}
 	@GetMapping("/customer")
-	public List<Customer> getAllCustomers() {
+	public List<Customer> getAllCustomers(HttpServletRequest request) throws JwtTokenMalformedException, JwtTokenMissingException {
+		JWTUtils.validateToken(request);
 		return iCustomerService.getAllCustomers();
 	}
 
@@ -69,23 +69,13 @@ public class CustomerController {
 	public Customer updateCustomer(@RequestBody Customer customer, @PathVariable Integer id) throws CustomerNotFoundException {
 		return iCustomerService.updateCustomer(id, customer);
 	}
-//	@PutMapping("/updateCustomers/(id)")
-//	public ResponseEntity<String> updateCustomer(@RequestBody Customer customer, @PathVariable Integer id, HttpServletRequest request) {
-//
-//		Customer updatedCustomer = iCustomerService.updateCustomer(id, customer);
-//		if(updatedCustomer != null) {
-//			return new ResponseEntity<String>("Customer updated successfully", HttpStatus.OK);
-//		}
-//		else
-//			return new ResponseEntity<String>("Customer failed to update", HttpStatus.NOT_FOUND);
-//	}
-	
+
 	@GetMapping("/customer/appointments/{id}")
 	public List<Appointment> getAllCustomerAppointments(@PathVariable Integer id) throws CustomerNotFoundException{
 		return iCustomerService.getAllAppointmentsForCustomer(id);
 	}
-	@DeleteMapping("/customer/{cid}")
-	public Appointment removeAppointment(@RequestBody long aid,@PathVariable Integer cid) throws AppointmentException{
+	@DeleteMapping("/customer/appointment/{cid}")
+	public String removeAppointment(@RequestBody long aid,@PathVariable Integer cid) throws AppointmentException{
 		return iCustomerService.removeAppointmentByid(cid, aid);
 	}
 }

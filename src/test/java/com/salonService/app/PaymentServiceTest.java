@@ -1,9 +1,10 @@
 package com.salonService.app;
 
-import static org.junit.jupiter.api.Assertions.*;
 import static org.assertj.core.api.Assertions.assertThat;
 //import static org.junit.Assert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -20,7 +21,6 @@ import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.test.context.junit4.SpringRunner;
 
 import com.salonService.app.entity.Appointment;
 import com.salonService.app.entity.Payment;
@@ -31,8 +31,6 @@ import com.salonService.app.repository.IAppointmentRepository;
 import com.salonService.app.repository.IPaymentRepository;
 import com.salonService.app.services.IPaymentService;
 import com.salonService.app.services.IPaymentServiceImpl;
-
-import net.bytebuddy.dynamic.DynamicType.Builder.FieldDefinition.Optional;
 
 @SpringBootTest
 
@@ -48,13 +46,13 @@ public class PaymentServiceTest {
 	@Mock
 	private IAppointmentRepository repository;
 
-	Payment payment = new Payment(1L, ModeOfPayment.CARD, PaymentStatus.PAID);
-	
+	Payment payment = new Payment(1L, ModeOfPayment.CARD, PaymentStatus.PAID, 0.0);
+
 	Appointment appointment = new Appointment();
 
 	@Test
 	@DisplayName("Test for adding Payment")
-	public void addPaymentTest() {
+	void addPaymentTest() {
 		payment.setPaymentId(1L);
 		payment.setStatus(PaymentStatus.PAID);
 		payment.setType(ModeOfPayment.CARD);
@@ -62,10 +60,10 @@ public class PaymentServiceTest {
 		assertEquals(payment, paymentService.addPayment(payment));
 	}
 
-	public void testGetPaymentByIdThrowsPaymentException() {
+	void testGetPaymentByIdThrowsPaymentException() {
 		long paymentId = 123456L;
 		try {
-			iPaymentService.getPaymentById(paymentId); 
+			iPaymentService.getPaymentById(paymentId);
 		} catch (PaymentException e) {
 			assertEquals("Paymantwith id" + paymentId + "is not found", e.getMessage());
 		}
@@ -73,7 +71,7 @@ public class PaymentServiceTest {
 
 	@Test
 	@DisplayName("Test for Deleteing Payment by Id")
-	public void deletePaymentTest() throws PaymentException {
+	void deletePaymentTest() throws PaymentException {
 		long appointmentId = 1L;
 		// Mockito.when(paymentRepository.deleteById(appointmentId).thenReturn(payment);
 		paymentService.deletePayment(appointmentId);
@@ -83,7 +81,7 @@ public class PaymentServiceTest {
 	}
 
 	@Test
-	public void testDeletePaymentThrowsPaymentException() {
+	void testDeletePaymentThrowsPaymentException() {
 		long paymentId = 123456L;
 		try {
 			iPaymentService.deletePayment(paymentId);
@@ -94,26 +92,27 @@ public class PaymentServiceTest {
 
 	@Test
 	@DisplayName("Test for payment details by id")
-	public void getPaymentDetailsTest() throws PaymentException {
+	void getPaymentDetailsTest() throws PaymentException {
 
 		Mockito.when(paymentRepository.findById(100L)).thenReturn(java.util.Optional.ofNullable(payment));
-      
+
 	}
+
 	@Test
-	public void getPaymentExceptionTest()throws PaymentException{
-		String msg=null;
+	void getPaymentExceptionTest() throws PaymentException {
+		String msg = null;
 		try {
 			iPaymentService.getPaymentById(100);
-			
-		}catch (Exception e) {
-			msg=e.getMessage();
+
+		} catch (Exception e) {
+			msg = e.getMessage();
 		}
 		assertEquals("Payment with id" + 100 + " was not found", msg);
 	}
 
 	@Test
 	@DisplayName("Test for getting all payments")
-	public void getAllPaymentDetails() throws PaymentException {
+	void getAllPaymentDetails() throws PaymentException {
 		Mockito.when(paymentRepository.findAll())
 				.thenReturn(Stream.of(new Payment(), new Payment()).collect(Collectors.toList()));
 
@@ -123,7 +122,7 @@ public class PaymentServiceTest {
 	}
 
 	@Test
-	public void testGetAllPaymentDetailsExceptionThrowsException() {
+	void testGetAllPaymentDetailsExceptionThrowsException() {
 		try {
 			iPaymentService.getAllPaymentDetails();
 		} catch (PaymentException e) {
@@ -133,7 +132,7 @@ public class PaymentServiceTest {
 
 	@Test
 	@DisplayName("Test for Updating Payment")
-	public void updatePaymentTest() {
+	void updatePaymentTest() {
 		java.util.Optional<Payment> payment = paymentRepository.findById(1L);
 		if (payment.isPresent()) {
 			payment.get().setType(ModeOfPayment.CARD);
@@ -147,49 +146,50 @@ public class PaymentServiceTest {
 	}
 
 	@Test
-	public void testUpdatePaymentThrowsPaymentException() {
+	void testUpdatePaymentThrowsPaymentException() {
 		long paymentId = 123456L;
 		Payment payment = new Payment();
 		try {
 			iPaymentService.updatePayment(paymentId, payment);
 
 		} catch (PaymentException e) {
-			assertEquals("Payment with id"+paymentId+"is not found,so cant update", e.getMessage());
+			assertEquals("Payment with id" + paymentId + "is not found,so cant update", e.getMessage());
 		}
 	}
-	  @Test
-	  public void testAddPaymentToAppointment() throws PaymentException {
-	    // Arrange
-	    long id = 1L;
-	    LocalDate date = LocalDate.parse("2023-02-10");
-	    Appointment appointment = new Appointment(100, "testlocation", date, null, null, null, null);
-	    Payment payment = new Payment(null, null, null);
-	    java.util.Optional<Appointment> optionalAppointment = java.util.Optional.of(appointment) ;
-	   
-	    when(repository.findById(id)).thenReturn(optionalAppointment);
-	    when(repository.save(appointment)).thenReturn(appointment);
-	   
-	    // Act
-	    Payment result = paymentService.addPaymentToAppointment(payment, id);
-	   
-	    // Assert
-	    assertNotNull(result);
-	    assertSame(payment, result);
-	    assertEquals(payment, appointment.getPayment());
-	  }
-	 
-	  @Test
-	  public void testAddPaymentToAppointmentWithNonexistentAppointment() throws PaymentException {
-	    // Arrange
-	    long id = 1L;
-	    Payment payment = new Payment(null, null, null);
-	    java.util.Optional<Appointment> optionalAppointment = java.util.Optional.empty();
-	   
-	    when(repository.findById(id)).thenReturn(optionalAppointment);
-	   
-	    // Act
-	    paymentService.addPaymentToAppointment(payment, id);
-	   
-	    // Assert (exception expected)
-	  }
+
+	@Test
+	void testAddPaymentToAppointment() throws PaymentException {
+		// Arrange
+		long id = 1L;
+		LocalDate date = LocalDate.parse("2023-02-10");
+		Appointment appointment = new Appointment(100, "testlocation", date, null, null, null, null);
+		Payment payment = new Payment(null, null, null, 0.0);
+		java.util.Optional<Appointment> optionalAppointment = java.util.Optional.of(appointment);
+
+		when(repository.findById(id)).thenReturn(optionalAppointment);
+		when(repository.save(appointment)).thenReturn(appointment);
+
+		// Act
+		Payment result = paymentService.addPaymentToAppointment(payment, id);
+
+		// Assert
+		assertNotNull(result);
+		assertSame(payment, result);
+		assertEquals(payment, appointment.getPayment());
+	}
+
+	@Test
+	void testAddPaymentToAppointmentWithNonexistentAppointment() throws PaymentException {
+		// Arrange
+		long id = 1L;
+		Payment payment = new Payment(null, null, null, 0.0);
+		java.util.Optional<Appointment> optionalAppointment = java.util.Optional.empty();
+
+		when(repository.findById(id)).thenReturn(optionalAppointment);
+
+		// Act
+		paymentService.addPaymentToAppointment(payment, id);
+
+		// Assert (exception expected)
+	}
 }

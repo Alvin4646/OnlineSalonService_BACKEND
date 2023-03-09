@@ -2,12 +2,10 @@ package com.salonService.app.services;
 
 import java.util.List;
 
-import com.salonService.app.entity.Customer;
 import com.salonService.app.entity.SalonService;
 import com.salonService.app.entity.ServiceCart;
 import com.salonService.app.exception.CartNotFoundException;
 import com.salonService.app.exception.SalonServiceNotFoundException;
-import com.salonService.app.exception.ServiceAlreadyExistsException;
 
 public interface IServiceCartService {
 	public ServiceCart getServiceCartByid(Long orderId) throws CartNotFoundException;

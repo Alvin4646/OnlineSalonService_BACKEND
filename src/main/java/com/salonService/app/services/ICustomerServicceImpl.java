@@ -9,16 +9,21 @@ import org.springframework.stereotype.Service;
 import com.salonService.app.entity.Appointment;
 import com.salonService.app.entity.Customer;
 import com.salonService.app.entity.ServiceCart;
+import com.salonService.app.entity.User;
 import com.salonService.app.exception.AppointmentException;
 import com.salonService.app.exception.CustomerNotFoundException;
-import com.salonService.app.repository.IAppointmentRepository;
+import com.salonService.app.exception.UserAlreadyExists;
 import com.salonService.app.repository.ICustomerRepository;
 import com.salonService.app.repository.IServiceCartRepository;
+import com.salonService.app.repository.IUserRepository;
 
 @Service
 public class ICustomerServicceImpl implements ICustomerService {
 @Autowired
 private ICustomerRepository iCustomerRepository ;
+
+@Autowired
+private IUserRepository iUserRepository;
 
 @Autowired
 private IAppointmentService iAppointmentService;
@@ -38,7 +43,11 @@ private IServiceCartRepository iServiceCartRepository;
 	}
 
 	@Override
-	public Customer addCustomer(Customer customer) {
+	public Customer addCustomer(Customer customer)throws UserAlreadyExists {
+		Optional<User> user= Optional.ofNullable(iUserRepository.findByUserName(customer.getUserName()));
+		if(user.isPresent()) {
+			throw new UserAlreadyExists("User with username Already exist please try with different username");
+		}
 		Customer customerToAdd= iCustomerRepository.save(customer);
 		long id=customer.getUserId();
 		ServiceCart cart=new ServiceCart(id,0D);
@@ -69,15 +78,7 @@ private IServiceCartRepository iServiceCartRepository;
 	public Customer deleteCustomer(Integer userId) throws CustomerNotFoundException {
 		Optional<Customer> customerToBeDeleted = iCustomerRepository.findById(userId);
 		if(customerToBeDeleted.isPresent()) {
-			long id=userId;
-			ServiceCart cart=iServiceCartRepository.findById(id).get();
-			customerToBeDeleted.get().setCart(null);
-	List<Appointment>list= customerToBeDeleted.get().getAppointments();
-			
-			customerToBeDeleted.get().getAppointments().removeAll(list);
-			iCustomerRepository.save(customerToBeDeleted.get());
-			iServiceCartRepository.delete(cart);
-			iCustomerRepository.deleteById(userId);
+			this.iUserRepository.deleteById(userId);
 			return customerToBeDeleted.get();
 		}
 		else {
@@ -87,13 +88,13 @@ private IServiceCartRepository iServiceCartRepository;
  
 	@Override
 	public List<Customer> getAllCustomers() {
-		// TODO Auto-generated method stub
+		
 		return iCustomerRepository.findAll();
 	}
 	
 	@Override
 	public List<Appointment> getAllAppointmentsForCustomer(Integer userId) throws CustomerNotFoundException{
-		//return iAppointmentServiceImpl.getAppointmentById(userId);
+		
 		Customer customer=getCustomer(userId);
 		if(customer==null) {
 			throw new CustomerNotFoundException("No customer with this id found");
@@ -105,7 +106,7 @@ private IServiceCartRepository iServiceCartRepository;
 		return customer.getAppointments();
 	}
 	
-	public Appointment removeAppointmentByid(Integer cid,long aid) throws AppointmentException {
+	public String removeAppointmentByid(Integer cid,long aid) throws AppointmentException {
 		Customer cust=iCustomerRepository.findById(cid).get();
 		Appointment appointmentToRemove=null;
 		for(Appointment appointment:cust.getAppointments()) {
@@ -120,6 +121,6 @@ private IServiceCartRepository iServiceCartRepository;
 			iAppointmentService.removeAppointment(aid);
 			iCustomerRepository.save(cust);
 		}
-		return appointmentToRemove;
+		return "Appointment removed successfully";
 	}
 }

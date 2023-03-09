@@ -1,7 +1,5 @@
 package com.salonService.app.entity;
 
-import java.util.Objects;
-
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -18,7 +16,6 @@ public class Admin {
 	String password;
 	public Admin() {
 		super();
-		// TODO Auto-generated constructor stub
 	}
 	public Admin(Long id, String password) {
 		super();

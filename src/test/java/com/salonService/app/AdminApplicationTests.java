@@ -12,7 +12,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import com.salonService.app.entity.Admin;
-import com.salonService.app.exception.ServiceAlreadyExistsException;
 import com.salonService.app.exception.UserAlreadyExists;
 import com.salonService.app.exception.UserNotExistsException;
 import com.salonService.app.repository.IAdminRepository;
@@ -31,7 +30,7 @@ public class AdminApplicationTests {
 
 	Admin s1, s2, s3;
 
-	public static Admin demo() {
+	 static Admin demo() {
 		Admin s = new Admin();
 		s.setId((long) 1);
 		s.setPassword("Monika@123");
@@ -39,7 +38,7 @@ public class AdminApplicationTests {
 	}
 
 	@BeforeEach
-	public void init() {
+	 void init() {
 		s1 = new Admin((long) 1, "Monika@123");
 		s2 = new Admin((long) 2, "Akash@123");
 		s3 = new Admin((long) 3, "Dharani@123");
@@ -62,7 +61,7 @@ public class AdminApplicationTests {
 	}
 	
 	@Test
-	public void validChangePassword()throws UserNotExistsException{
+	 void validChangePassword()throws UserNotExistsException{
 		Admin s4=new Admin();
 		s4.setId((long) 2);
 		s4.setPassword("Monika@123");
@@ -72,13 +71,13 @@ public class AdminApplicationTests {
 	}
 	
 	@Test
-	public void inValidChangePassword()throws UserNotExistsException{
+void inValidChangePassword()throws UserNotExistsException{
 		Mockito.when(adminRepository.findById(admin.getId())).thenReturn(Optional.of(admin));
 		UserNotExistsException ex = Assertions.assertThrows(UserNotExistsException.class, () -> adminService.changePassword(s2));
 		Assertions.assertEquals(ex.getMessage(), "User not found with id " + s2.getId());
 	}
 	@Test
-	public void signInFailureWrongPassword(){
+	 void signInFailureWrongPassword(){
 		Admin userR=new Admin();
 		userR.setId((long) 1);
 		userR.setPassword("teja@123");
@@ -90,7 +89,7 @@ public class AdminApplicationTests {
 
 	
 	@Test
-	public void SignInPassword() throws UserAlreadyExists, UserNotExistsException{
+	void SignInPassword() throws UserAlreadyExists, UserNotExistsException{
 		Admin userR=new Admin();
 		userR.setId((long)2);
 		userR.setPassword("teja@123");

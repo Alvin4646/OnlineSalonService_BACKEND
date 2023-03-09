@@ -63,7 +63,7 @@ class SalonServiceAppApplicationTests {
 		Mockito.when(salonRepository.findById(salonService.getServiceId())).thenReturn(Optional.of(salonService));
 		ServiceAlreadyExistsException ex = Assertions.assertThrows(ServiceAlreadyExistsException.class,
 				() -> salon.addService(salonService));
-		Assertions.assertEquals(ex.getMessage(), "SERVICE ALREADY EXISTS");
+		Assertions.assertEquals("SERVICE ALREADY EXISTS", ex.getMessage());
 	}
 
 	@Test
@@ -104,7 +104,7 @@ class SalonServiceAppApplicationTests {
 		Mockito.when(salonRepository.findById(salonService.getServiceId())).thenReturn(Optional.empty());
 		SalonServiceNotFoundException ex = Assertions.assertThrows(SalonServiceNotFoundException.class,
 				() -> salon.updateService((salonService.getServiceId()), salonService));
-		Assertions.assertEquals(ex.getMessage(), "Salon service not found");
+		Assertions.assertEquals("Salon service not found", ex.getMessage());
 	}
 
 	@Test
@@ -112,7 +112,7 @@ class SalonServiceAppApplicationTests {
 		Mockito.when(salonRepository.findById(salonService.getServiceId())).thenReturn(Optional.empty());
 		SalonServiceNotFoundException ex = Assertions.assertThrows(SalonServiceNotFoundException.class,
 				() -> salon.getService(salonService.getServiceId()));
-		Assertions.assertEquals(ex.getMessage(), "Salon Service NOT FOUND");
+		Assertions.assertEquals("Salon Service NOT FOUND", ex.getMessage());
 	}
 
 	@Test
@@ -128,7 +128,7 @@ class SalonServiceAppApplicationTests {
 		//Mockito.when(salonRepository.findAll()).thenReturn(Optional.ofNullab));
 		SalonServiceNotFoundException ex = Assertions.assertThrows(SalonServiceNotFoundException.class,
 				() -> salon.getAllServices());
-		Assertions.assertEquals(ex.getMessage(), "Salon Service NOT FOUND");
+		Assertions.assertEquals("Salon Service NOT FOUND", ex.getMessage());
 	}
 
 	@Test

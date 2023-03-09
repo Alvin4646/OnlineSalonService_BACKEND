@@ -3,8 +3,6 @@ package com.salonService.app.controller;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.validation.Valid;
-
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -14,6 +12,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import com.salonService.app.exception.AppointmentException;
 import com.salonService.app.exception.DuplicateAppointmentException;
+import com.salonService.app.exception.InvalidUserException;
 
 @RestControllerAdvice
 public class AppointmentControllerAdvice {
@@ -28,11 +27,17 @@ public class AppointmentControllerAdvice {
 	public String handleDuplicateAppointmentException(Exception e) {
 		return e.getMessage();
 	}
+	
+	@ExceptionHandler(InvalidUserException.class)
+	@ResponseStatus(value = HttpStatus.CONFLICT)
+	public String handleInvalidUsertException(Exception e) {
+		return e.getMessage();
+	}
 	@ResponseStatus(HttpStatus.BAD_REQUEST)
 	@ExceptionHandler(MethodArgumentNotValidException.class)
 	public Map<String, String> handleValidationExceptions(MethodArgumentNotValidException ex) {
 		Map<String, String> errors = new HashMap<>();
-		ex.getBindingResult().getAllErrors().forEach((error) -> {
+		ex.getBindingResult().getAllErrors().forEach(error -> {
 			String fieldName = ((FieldError)error).getField();
 			String errorMessage = error.getDefaultMessage();
 			errors.put(fieldName, errorMessage);

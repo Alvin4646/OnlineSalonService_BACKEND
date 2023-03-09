@@ -4,10 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
@@ -16,6 +13,13 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.Mockito;
+import org.mockito.MockitoAnnotations;
+
 import com.salonService.app.entity.SalonService;
 import com.salonService.app.entity.ServiceCart;
 import com.salonService.app.exception.CartNotFoundException;
@@ -23,13 +27,6 @@ import com.salonService.app.exception.SalonServiceNotFoundException;
 import com.salonService.app.repository.ISalonRepository;
 import com.salonService.app.repository.IServiceCartRepository;
 import com.salonService.app.services.IServiceCartServiceImpl;
-
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
 
 class SalonServiceCartTest {
 	@Mock
@@ -123,7 +120,7 @@ class SalonServiceCartTest {
 	}
 
 	@Test
-	public void testDeleteServiceById_Success() {
+	 void testDeleteServiceById_Success() {
 		// Arrange
 		Long cartId = 1L;
 		Double amount = 100.0;
@@ -142,7 +139,7 @@ class SalonServiceCartTest {
 	}
 
 	@Test
-	public void testGetAllServicesInCart() throws SalonServiceNotFoundException, CartNotFoundException {
+	void testGetAllServicesInCart() throws SalonServiceNotFoundException, CartNotFoundException {
 		// Arrange
 		Long cartId = 1L;
 		List<ServiceCart> expectedServices = new ArrayList<>();
@@ -158,7 +155,7 @@ class SalonServiceCartTest {
 	}
 
 	@Test
-	    public void testGetAllServicesInCart_EmptyCart() throws SalonServiceNotFoundException, CartNotFoundException {
+	     void testGetAllServicesInCart_EmptyCart() throws SalonServiceNotFoundException, CartNotFoundException {
 	        // Arrange
 	        when(serviceRepo.findAll()).thenReturn(new ArrayList<ServiceCart>());
 	       
@@ -169,7 +166,7 @@ class SalonServiceCartTest {
 	    }
 
 	@Test
-	    public void testGetServiceCartByid() throws CartNotFoundException {
+	    void testGetServiceCartByid() throws CartNotFoundException {
 	        // Arrange
 	        ServiceCart expectedService = new ServiceCart(1L, 1000.0, Collections.emptyList());
 	        when(serviceRepo.findById(1L)).thenReturn(Optional.of(expectedService));
@@ -182,7 +179,7 @@ class SalonServiceCartTest {
 	    }
 
 	@Test
-	    public void testGetServiceCartByid_CartNotFound() throws CartNotFoundException {
+	   void testGetServiceCartByid_CartNotFound() throws CartNotFoundException {
 	        // Arrange
 	        when(serviceRepo.findById(1L)).thenReturn(Optional.empty());
 	       

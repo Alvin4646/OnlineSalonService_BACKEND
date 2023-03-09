@@ -1,22 +1,15 @@
 package com.salonService.app.services;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.salonService.app.entity.Appointment;
-import com.salonService.app.entity.Customer;
 import com.salonService.app.entity.SalonService;
 import com.salonService.app.entity.ServiceCart;
 import com.salonService.app.exception.CartNotFoundException;
 import com.salonService.app.exception.SalonServiceNotFoundException;
-import com.salonService.app.exception.ServiceAlreadyExistsException;
-import com.salonService.app.repository.ISalonRepository;
 import com.salonService.app.repository.IServiceCartRepository;
 
 @Service 
@@ -28,15 +21,15 @@ public class IServiceCartServiceImpl implements IServiceCartService {
 	ICustomerService iCustomerService;
 	@Autowired
 	ISalonService iSalonService; 
-	ServiceCart cart;
-	@Autowired 
-	private ISalonRepository salonRepository;
+	
+	
 	
 
 	@Override
 	public ServiceCart addServiceToCart(SalonService service, Long cartId) throws CartNotFoundException, SalonServiceNotFoundException{
 		int count=0;
 		 Optional<ServiceCart> service2 =serviceRepo.findById(cartId);
+		 if(service2.isPresent());
 		 ServiceCart service1= service2.get();
 		 if(!service2.isPresent()) {
 			 throw new CartNotFoundException("Cart with customer "+cartId+"not found to add service");
@@ -61,6 +54,7 @@ public class IServiceCartServiceImpl implements IServiceCartService {
 	
 	@Override
 	public SalonService deleteServiceById(Long serviceId,Long cartid) {
+		if(serviceRepo.findById(cartid).isPresent());
 		ServiceCart cart=serviceRepo.findById(cartid).get();
 		SalonService serviceToRemove=null;
 		for(SalonService service:cart.getServiceList()) {
@@ -78,22 +72,7 @@ public class IServiceCartServiceImpl implements IServiceCartService {
 		}
 		return serviceToRemove;
 	}
-//	@Override
-//	public SalonService deleteServiceById(Long serviceId,Long cartid) {
-//		Optional<ServiceCart> optCart=serviceRepo.findById(cartid);
-//		ServiceCart foundCart=optCart.get();
-//		Optional<SalonService> optService=salonRepository.findById(serviceId);
-//		SalonService foundService=optService.get();
-//		
-//		Double amount1=serviceRepo.findById(cartid).get().getAmount();
-//		Double amount2=amount1-Double.parseDouble(foundService.getServicePrice());
-//		foundCart.setAmount(amount2);
-//		
-//		foundCart.getServiceList().remove(foundService);
-//		this.serviceRepo.save(foundCart);
-//		return foundService;
-//	}
-	
+
 
 
 	@Override

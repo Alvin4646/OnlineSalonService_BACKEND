@@ -3,7 +3,6 @@ package com.salonService.app.entity;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
-import javax.persistence.OneToOne;
 
 @Entity
 public class Payment {
@@ -12,16 +11,17 @@ public class Payment {
 	private Long paymentId;
 	private ModeOfPayment type;
 	private PaymentStatus status;	
+	private double amount;
 	
 	public Payment() {
 		super(); 
 	}
-	public Payment(Long paymentId, ModeOfPayment type, PaymentStatus status) {
+	public Payment(Long paymentId, ModeOfPayment type, PaymentStatus status,double amount) {
 		super();
 		this.paymentId = paymentId;
 		this.type = type;
 		this.status = status;
-	
+		this.amount=amount;
 	}
 	public Long getPaymentId() {
 		return paymentId;
@@ -42,6 +42,12 @@ public class Payment {
 		this.status = status;
 	}
 
+	public double getAmount() {
+		return amount;
+	}
+	public void setAmount(double amount) {
+		this.amount = amount;
+	}
 	@Override
 	public String toString() {
 		return "Payment [paymentId=" + paymentId + ", type=" + type + ", status=" + status + "]";

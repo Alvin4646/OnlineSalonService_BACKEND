@@ -4,9 +4,11 @@ import java.time.LocalDate;
 import java.util.List;
 
 import com.salonService.app.entity.Appointment;
+import com.salonService.app.entity.Appointment.AppointmentStatus;
 import com.salonService.app.entity.Payment;
 import com.salonService.app.entity.SalonService;
 import com.salonService.app.exception.AppointmentException;
+import com.salonService.app.exception.CustomerNotFoundException;
 import com.salonService.app.exception.DuplicateAppointmentException;
 
 public interface IAppointmentService {
@@ -19,7 +21,7 @@ public interface IAppointmentService {
 
 	public List<Appointment> getAllAppointments() throws AppointmentException;
 
-	public List<Appointment> getOpenAppointments()throws AppointmentException ;
+	public List<Appointment> getOpenAppointments(AppointmentStatus status)throws AppointmentException ;
 	
 	public Appointment addAppointmentToCustomer(Appointment appointment,int custId)throws Exception ;
 	
@@ -29,7 +31,10 @@ public interface IAppointmentService {
 	
 	public Payment removePaymenttByid(long aid) throws AppointmentException ;
 	
-	public Appointment removeAppointmentByid(Integer cid,long aid) throws AppointmentException ;
 	
 	public List<SalonService> getServiceList(long aid) throws AppointmentException;
+	
+	public String cancelAppointment(long id) throws AppointmentException;
+	
+	public Appointment bookAppointment(long aid,Integer cid,Payment payment) throws AppointmentException, CustomerNotFoundException;
 }

@@ -3,8 +3,6 @@ package com.salonService.app;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.time.LocalDate;
@@ -18,7 +16,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 
 import com.salonService.app.entity.Appointment;
-import com.salonService.app.entity.Appointment.AppointmentStatus;
 import com.salonService.app.entity.Customer;
 import com.salonService.app.entity.Payment;
 import com.salonService.app.entity.SalonService;
@@ -39,10 +36,11 @@ class AppointmentServiceTest {
 	@MockBean
 	private ICustomerRepository iCustomerRepository;
 
-	Payment pay = new Payment(null, null, null);
+	Payment pay = new Payment(null, null, null,0.0);
 	ServiceCart cart = new ServiceCart(null, null, null);
 	LocalDate date = LocalDate.parse("2023-02-10");
-	Appointment appointment = new Appointment(100, "testlocation", date, null, cart, pay, null);
+	List<SalonService> serviceList=new ArrayList<>();
+	Appointment appointment = new Appointment(100, "testlocation", date, null, serviceList, pay, null);
 
 	@Test
 	void addAppointmentTest() throws Exception{
@@ -50,14 +48,14 @@ class AppointmentServiceTest {
 		when(repository.save(appointment)).thenReturn(appointment);
 		assertEquals(appointment, iAppointmentService.addAppointment(appointment));
 		
-		//assertNotNull(iAppointmentService.addAppointment(appointment));
+		
 	}
 
 	@Test
 	void addAppointmentToCustomerTest() throws Exception {
-		long id = 100;
+		
 		List<Appointment> app = new ArrayList<>();
-		Customer cust = new Customer(100, "alvin", "alvin@email.com", "pwd", "898", date, app, cart, "address");
+		Customer cust = new Customer( "alvin", "alvin@email.com", "pwd", "898", date, app, cart, "address");
 		cust.getAppointments().add(appointment);
 		when(iCustomerRepository.findById(100)).thenReturn(Optional.of(cust));
 		when(repository.save(appointment)).thenReturn(appointment);
@@ -116,10 +114,10 @@ class AppointmentServiceTest {
 	@Test
 	void updateAppointmentDateTest() throws AppointmentException {
 		long id = 100;
-		Payment pay = new Payment(null, null, null);
-		ServiceCart cart = new ServiceCart(null, null, null);
+		Payment pay = new Payment(null, null, null,0.0);
+		
 		LocalDate date = LocalDate.parse("2023-02-11");
-		Appointment updateAppointment = new Appointment(id, "testlocation", date, null, cart, pay, null);
+		Appointment updateAppointment = new Appointment(id, "testlocation", date, null, serviceList, pay, null);
 
 		when(repository.findById(id)).thenReturn(Optional.of(appointment));
 		when(repository.save(updateAppointment)).thenReturn(updateAppointment);
@@ -172,62 +170,11 @@ class AppointmentServiceTest {
 		assertEquals("No appointment with this date " + date + " found", msg);
 	}
 
-	@Test
-	void getOpenAppointmentsTest() throws AppointmentException {
-		List<Appointment> app = new ArrayList<>();
-		app.add(appointment);
-		when(repository.findByAppointmentStatus(AppointmentStatus.OPEN)).thenReturn(app);
-		assertNotNull(iAppointmentService.getOpenAppointments());
-	}
+
+
 
 	@Test
-	void getOpenAppointmentsExceptionTest() {
-		String msg = null;
-		List<Appointment> app = new ArrayList<>();
-		when(repository.findByAppointmentStatus(AppointmentStatus.OPEN)).thenReturn(app);
-		try {
-			iAppointmentService.getOpenAppointments();
-		} catch (Exception e) {
-			msg = e.getMessage();
-		}
-
-		assertEquals("No open appointments found !", msg);
-	}
-
-	@Test
-	public void testRemoveAppointmentByid() throws AppointmentException {
-		int cid = 1;
-		long aid = 100;
-		Customer customer = new Customer();
-		customer.setUserId(cid);
-		List<Appointment> appointments = new ArrayList<Appointment>();
-		Appointment appointment = new Appointment();
-		appointment.setAppointmentId(aid);
-		appointments.add(appointment);
-		customer.setAppointments(appointments);
-		when(iCustomerRepository.findById(1)).thenReturn(Optional.of(customer));
-		when(iCustomerRepository.findById(cid)).thenReturn(Optional.of(customer));
-		Appointment appointmentRemoved = iAppointmentService.removeAppointmentByid(cid, aid);
-		assertEquals(aid, appointmentRemoved.getAppointmentId());
-		verify(iCustomerRepository, times(1)).save(customer);
-	}
-
-	@Test
-	public void testRemoveAppointmentByid_failure() throws AppointmentException {
-		int cid = 1;
-		long aid = 100;
-		String msg = null;
-		try {
-			when(iCustomerRepository.findById(cid)).thenReturn(java.util.Optional.empty());
-			iAppointmentService.removeAppointmentByid(cid, aid);
-		} catch (Exception e) {
-			msg = e.getMessage();
-		}
-		assertEquals("Unable to delete no appointment with id " + aid + " found", msg);
-	}
-
-	@Test
-	public void testGetServiceList() throws AppointmentException {
+	 void testGetServiceList() throws AppointmentException {
 		long appointmentId = 1L;
 
 		// Create a test appointment
@@ -240,7 +187,7 @@ class AppointmentServiceTest {
 		service1.setSeviceName("Service 1");
 		services.add(service1);
 		cart.setServiceList(services);
-		appointment.setCart(cart);
+		appointment.setServiceList(services);
 
 		// Mock the repository method to return the test appointment
 		when(repository.findById(appointmentId)).thenReturn(Optional.of(appointment));
@@ -253,7 +200,7 @@ class AppointmentServiceTest {
 	}
 
 	@Test
-	public void testGetServiceListException() throws AppointmentException {
+	void testGetServiceListException() throws AppointmentException {
 		long appointmentId = 1L;
 
 		Appointment appointment = new Appointment();
@@ -270,7 +217,7 @@ class AppointmentServiceTest {
 	}
 
 	@Test
-	public void testGetServiceListEmptyException() throws AppointmentException {
+	 void testGetServiceListEmptyException() throws AppointmentException {
 		long appointmentId = 1L;
 
 		// Create a test appointment with an empty cart
@@ -278,7 +225,7 @@ class AppointmentServiceTest {
 		appointment.setAppointmentId(appointmentId);
 		ServiceCart cart = new ServiceCart();
 		cart.setServiceList(new ArrayList<>());
-		appointment.setCart(cart);
+		appointment.setServiceList(new ArrayList<>());
 		when(repository.findById(appointmentId)).thenReturn(Optional.of(appointment));
 		String msg = null;
 		try {

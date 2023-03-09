@@ -1,6 +1,8 @@
 package com.salonService.app;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.when;
 
 import java.time.LocalDate;
@@ -12,12 +14,11 @@ import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
-import com.salonService.app.entity.Appointment;
 import com.salonService.app.entity.Customer;
 import com.salonService.app.exception.CustomerNotFoundException;
+import com.salonService.app.exception.UserAlreadyExists;
 import com.salonService.app.repository.ICustomerRepository;
 import com.salonService.app.services.ICustomerServicceImpl;
 
@@ -30,7 +31,7 @@ class CustomerServiceTest {
 
 	@Test
 	@DisplayName("Test to add")
-	public void addCustomerService() {
+	 void addCustomerService() throws UserAlreadyExists {
 		Customer customerService1 = new Customer();
 		customerService1.setName("Arun");
 		customerService1.setEmail("abc@gmail.com");
@@ -40,7 +41,7 @@ class CustomerServiceTest {
 		customerService1.setAppointments(null);
 		customerService1.setCart(null);
 		customerService1.setPassword("Password");
-		customerService1.setUserId(null);
+		
 
 		Mockito.when(customerRepository.save(customerService1)).thenReturn(customerService1);
 
@@ -48,7 +49,7 @@ class CustomerServiceTest {
 	}
 
 	@Test
-	public void deleteCustomerservice() throws CustomerNotFoundException {
+	 void deleteCustomerservice() throws CustomerNotFoundException {
 
 		Customer customer = new Customer();
 		customer.setName("Arun");
@@ -59,13 +60,13 @@ class CustomerServiceTest {
 		customer.setAppointments(null);
 		customer.setCart(null);
 		customer.setPassword("Password");
-		customer.setUserId(null);
-		Mockito.when(customerRepository.findById(customer.getUserId())).thenReturn(Optional.of(customer));
-		assertNotEquals(customer, customerService.deleteCustomer(customer.getUserId()));
+		int id=(int) customer.getUserId();
+		Mockito.when(customerRepository.findById(id)).thenReturn(Optional.of(customer));
+		assertNotEquals(customer, customerService.deleteCustomer(id));
 	}
 
 	@Test
-	public void updateCustomerservice() {
+	 void updateCustomerservice() {
 		Customer customer = new Customer();
 		customer.setName("Arun");
 		customer.setEmail("abc@gmail.com");
@@ -75,13 +76,12 @@ class CustomerServiceTest {
 		customer.setAppointments(null);
 		customer.setCart(null);
 		customer.setPassword("Password");
-		customer.setUserId(null);
 		Mockito.when(customerRepository.save(customer)).thenReturn(customer);
 		assertNotEquals(customer, customerRepository.save(customer));
 	}
 
 	@Test
-	public void getAllCustomerservice() {
+	 void getAllCustomerservice() {
 		Mockito.when(customerRepository.findAll())
 				.thenReturn(java.util.stream.Stream.of(new Customer(), new Customer()).collect(Collectors.toList()));
 
@@ -89,7 +89,7 @@ class CustomerServiceTest {
 	}
 
 	@Test
-	public void getServiceById() {
+	 void getServiceById() {
 		Customer customer = new Customer();
 		customer.setName("Arun");
 		customer.setEmail("abc@gmail.com");
@@ -100,13 +100,12 @@ class CustomerServiceTest {
 		customer.setCart(null);
 		customer.setPassword("Password");
 		customer.setUserId(1);
-
 		Mockito.when(customerRepository.save(customer)).thenReturn(customer);
-		assertNotEquals(customer, customerRepository.findById(customer.getUserId()));
+		assertNotEquals(customer, customerRepository.findById((int)customer.getUserId()));
 	}
 
 	@Test
-	public void testGetCustomer_whenCustomerNotFound_shouldThrowException() {
+	 void testGetCustomer_whenCustomerNotFound_shouldThrowException() {
 		Customer customer = new Customer();
 		customer.setName("Arun");
 		customer.setEmail("abc@gmail.com");
@@ -127,7 +126,7 @@ class CustomerServiceTest {
 	}
 
 @Test
-public void testDeleteCustomer_whenCustomerNotFound_shouldThrowException() {
+void testDeleteCustomer_whenCustomerNotFound_shouldThrowException() {
 	
 
   when(customerRepository.findById(1)).thenReturn(Optional.empty());

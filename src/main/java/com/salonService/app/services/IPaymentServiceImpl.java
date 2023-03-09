@@ -54,7 +54,7 @@ public class IPaymentServiceImpl implements IPaymentService {
 		if (iPaymentRepository.existsById(paymentId)) {
 			Payment paymentToBeUpdated = iPaymentRepository.findById(paymentId).get();
 			paymentToBeUpdated.setStatus(payment.getStatus());
-			paymentToBeUpdated.setType(payment.getType());
+			
 			iPaymentRepository.save(paymentToBeUpdated);
 			return paymentToBeUpdated;
 		}
@@ -66,13 +66,12 @@ public class IPaymentServiceImpl implements IPaymentService {
 
 	@Override
 	public List<Payment> getAllPaymentDetails() throws PaymentException {
-		//return iPaymentRepository.findAll();
+	
 		List<Payment> list=iPaymentRepository.findAll();
 		if(list.isEmpty()) {
 			throw new PaymentException("No Payment details found in database");
 		}
-		
-		// TODO Auto-generated method stub
+	
 		return list;
 	}
 

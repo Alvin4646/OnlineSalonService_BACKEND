@@ -6,14 +6,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.ManyToMany;
-import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
-import javax.validation.constraints.Future;
 import javax.validation.constraints.FutureOrPresent;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
@@ -34,42 +31,44 @@ public class Appointment {
 	@NotBlank(message = "Location cannot be empty")
 	@Pattern(regexp = "Mumbai|Pune|Bangalore|Delhi|mumbai|pune|bangalore|delhi", message = "Invalid location, valid locations ara Mumbai, Pune, Bangalore, Delhi")
 	private String location;
-	
+
 	@FutureOrPresent(message = "Invalid date! Date cannot be past date")
 	@NotNull(message = "Date cannot be empty")
 	private LocalDate preferredDate;
-	
+
 	@JsonIgnore
 	@JsonDeserialize(using = LocalTimeDeserializer.class)
 	@JsonSerialize(using = LocalTimeSerializer.class)
-	//@Pattern(regexp = "^(09|1[0-2]|1[0-9]):[0-5][0-9]:[0-5][0-9]$")
-	@NotNull(message = "please enter a time it cannot be null")	
+	// @Pattern(regexp = "^(09|1[0-2]|1[0-9]):[0-5][0-9]:[0-5][0-9]$")
+	@NotNull(message = "please enter a time it cannot be null")
 	private LocalTime preferredTime;
 
-	@NotNull(message = "Appointment status cannot be null")
+	
 	private AppointmentStatus appointmentStatus;
 
-	@ManyToOne
-	ServiceCart cart; 
-	
+
+
+	@ManyToMany
+	List<SalonService> serviceList = new ArrayList<>();
+
 	@OneToOne(orphanRemoval = true)
 	Payment payment;
 
 	public Appointment(long appointmentId, String location, LocalDate preferredDate, LocalTime preferredTime,
-			ServiceCart cart, Payment payment, AppointmentStatus appointmentStatus) {
+			List<SalonService> serviceList, Payment payment, AppointmentStatus appointmentStatus) {
 		super();
 		this.appointmentId = appointmentId;
 		this.location = location;
 		this.preferredDate = preferredDate;
 		this.preferredTime = preferredTime;
-		this.cart = cart;
+		this.serviceList = serviceList;
 		this.payment = payment;
 		this.appointmentStatus = appointmentStatus;
 	}
 
 	public Appointment() {
 		super();
-		// TODO Auto-generated constructor stub
+		
 	}
 
 	public long getAppointmentId() {
@@ -120,16 +119,16 @@ public class Appointment {
 		this.payment = payment;
 	}
 
-	public ServiceCart getCart() {
-		return cart;
+	public List<SalonService> getServiceList() {
+		return serviceList;
 	}
 
-	public void setCart(ServiceCart cart) {
-		this.cart = cart;
+	public void setServiceList(List<SalonService> serviceList) {
+		this.serviceList = serviceList;
 	}
 
 	public enum AppointmentStatus {
-		OPEN, CLOSE
+		OPEN, CLOSE, CANCELED, BOOKED
 	}
 
 }
