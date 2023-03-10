@@ -21,7 +21,10 @@ import com.salonService.app.entity.Payment;
 import com.salonService.app.entity.SalonService;
 import com.salonService.app.exception.AppointmentException;
 import com.salonService.app.exception.CustomerNotFoundException;
+import com.salonService.app.exception.JwtTokenMalformedException;
+import com.salonService.app.exception.JwtTokenMissingException;
 import com.salonService.app.services.IAppointmentService;
+import com.salonService.app.util.JWTUtils;
 
 
 @RestController
@@ -32,20 +35,21 @@ public class AppointmentController {
 	
 
 	@PostMapping("/appointment/{cid}")
-	public Appointment addAppointmentToCustomer(@Valid @RequestBody Appointment appointment, @PathVariable int cid)
+	public Appointment addAppointmentToCustomer(@Valid @RequestBody Appointment appointment, @PathVariable int cid,HttpServletRequest request)
 			throws Exception {
+		JWTUtils.validateToken(request);
 		return this.iAppointmentService.addAppointmentToCustomer(appointment, cid); 
 	}
  
 	@GetMapping("/appointment/{aid}")
-	public Appointment findAppointmentById(@PathVariable Long aid,HttpServletRequest request) throws AppointmentException {
-		
+	public Appointment findAppointmentById(@PathVariable Long aid,HttpServletRequest request) throws AppointmentException, JwtTokenMalformedException, JwtTokenMissingException {
+		JWTUtils.validateToken(request);
 		return iAppointmentService.getAppointmentById(aid);
 	}
 
 	@GetMapping("/appointments")
-	public List<Appointment> findAllAppointments(HttpServletRequest request) throws AppointmentException {
-		
+	public List<Appointment> findAllAppointments(HttpServletRequest request) throws AppointmentException, JwtTokenMalformedException, JwtTokenMissingException {
+		JWTUtils.validateToken(request);
 		return iAppointmentService.getAllAppointments();
 
 	}
@@ -58,8 +62,9 @@ public class AppointmentController {
 	}
 
 	@PutMapping("/appointment/{id}")
-	public Appointment updateAppointments(@Valid @RequestBody Appointment appointment, @PathVariable Long id)
-			throws AppointmentException {
+	public Appointment updateAppointments(@Valid @RequestBody Appointment appointment, @PathVariable Long id,HttpServletRequest request)
+			throws AppointmentException, JwtTokenMalformedException, JwtTokenMissingException {
+		JWTUtils.validateToken(request);
 		return iAppointmentService.updateAppointment(id, appointment);
 	}
 
@@ -82,13 +87,14 @@ public class AppointmentController {
 	}
 	
 	@PutMapping("/appointment/cancel/{aid}")
-	public String cancelAppointments(@PathVariable long aid,HttpServletRequest request) throws AppointmentException {
-		
+	public String cancelAppointments(@PathVariable long aid,HttpServletRequest request) throws AppointmentException, JwtTokenMalformedException, JwtTokenMissingException {
+		JWTUtils.validateToken(request);
 		return iAppointmentService.cancelAppointment(aid);
 	}
 	
 	@PostMapping("/appointment/{cid}/{aid}")
-	public Appointment bookAppointment(@RequestBody Payment payment,@PathVariable long aid,@PathVariable Integer cid)throws AppointmentException,CustomerNotFoundException{
+	public Appointment bookAppointment(@RequestBody Payment payment,@PathVariable long aid,@PathVariable Integer cid,HttpServletRequest request)throws AppointmentException,CustomerNotFoundException, JwtTokenMalformedException, JwtTokenMissingException{
+		JWTUtils.validateToken(request);
 		return iAppointmentService.bookAppointment(aid, cid, payment);
 	}
 

@@ -32,7 +32,7 @@ public class JWTUtils {
 		Claims claims = Jwts.claims().setSubject(id);
 		
 		long nowMillis = System.currentTimeMillis();
-		long expMillis = 60*60*60*1000;
+		long expMillis = 60*60*1000;
 		Date exp = new Date(System.currentTimeMillis() +expMillis);
 		return Jwts.builder().setClaims(claims).setIssuedAt(new Date(nowMillis)).setExpiration(exp)
 				.signWith(SignatureAlgorithm.HS512, jwtSecret).compact();
