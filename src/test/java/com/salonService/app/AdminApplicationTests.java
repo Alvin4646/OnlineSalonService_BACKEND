@@ -19,7 +19,7 @@ import com.salonService.app.services.IAdminService;
 import com.salonService.app.services.IAdminServiceImpl;
 
 @SpringBootTest
-public class AdminApplicationTests {
+class AdminApplicationTests {
 	@Mock
 	IAdminRepository adminRepository;
 	@Autowired
@@ -57,7 +57,7 @@ public class AdminApplicationTests {
 	void invalidAdminSignup() throws UserAlreadyExists {
 		Mockito.when(adminRepository.findById(admin.getId())).thenReturn(Optional.of(admin));
 		UserAlreadyExists ex = Assertions.assertThrows(UserAlreadyExists.class, () -> adminService.signUp(admin));
-		Assertions.assertEquals(ex.getMessage(), "Account with given id existed");
+		Assertions.assertEquals("Account with given id existed", ex.getMessage());
 	}
 	
 	@Test

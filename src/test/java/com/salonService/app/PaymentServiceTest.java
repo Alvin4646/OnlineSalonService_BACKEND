@@ -33,8 +33,7 @@ import com.salonService.app.services.IPaymentService;
 import com.salonService.app.services.IPaymentServiceImpl;
 
 @SpringBootTest
-
-public class PaymentServiceTest {
+ class PaymentServiceTest {
 
 	@Autowired
 	private IPaymentServiceImpl paymentService;
@@ -141,7 +140,7 @@ public class PaymentServiceTest {
 		}
 		java.util.Optional<Payment> updatedpayment = paymentRepository.findById(1L);
 		if (updatedpayment.isPresent()) {
-			assertThat(updatedpayment.get().getType().equals("CARD"));
+			assertThat(updatedpayment.get().getType().equals(ModeOfPayment.CARD));
 		}
 	}
 

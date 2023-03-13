@@ -19,8 +19,7 @@ public class JWTUtils {
 	static String jwtSecret="itsaSecret46";
 	public static Claims getClaims(final String token) {
 		try {
-			Claims body = Jwts.parser().setSigningKey(jwtSecret).parseClaimsJws(token).getBody();
-			return body;
+			return Jwts.parser().setSigningKey(jwtSecret).parseClaimsJws(token).getBody();
 		} catch (Exception e) {
 		throw new JwtException("Invalid token");
 		}

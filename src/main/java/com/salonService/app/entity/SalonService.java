@@ -28,7 +28,7 @@ public class SalonService {
 
 	public SalonService() {
 		super();
-		// TODO Auto-generated constructor stub
+	
 	}
 
 	public SalonService(Long serviceId, String seviceName, String servicePrice, String serviceDuration) {

@@ -19,7 +19,7 @@ public class IUserServiceImpl implements IUserService {
 
 	@Override
 	public User signIn(User user) {
-		// TODO Auto-generated method stub
+	
 		User loggedInUser = repository.getUserByUsernameAndPassword(user.getUserName(), user.getPassword());
 		if (loggedInUser != null)
 			return loggedInUser;
@@ -29,7 +29,6 @@ public class IUserServiceImpl implements IUserService {
 
 	@Override
 	public User changePassword(Integer id, String changedPassword) {
-		// TODO Auto-generated method stub
 
 		if (repository.existsById(id)) {
 
@@ -55,7 +54,7 @@ public class IUserServiceImpl implements IUserService {
 
 	@Override
 	public User signOut(User user) {
-		// TODO Auto-generated method stub
+	
 		return null;
 	}
 

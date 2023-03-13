@@ -29,7 +29,7 @@ public class AuthenticationController {
 	User user;
 
 	@PostMapping
-	public ResponseEntity<?> createAuthenticationToken(@RequestBody LoginCredentials request,HttpServletResponse response) throws Exception {
+	public ResponseEntity<User> createAuthenticationToken(@RequestBody LoginCredentials request,HttpServletResponse response) throws Exception {
 		user = userRepository.findByUserName(request.getUsername());
 		if (user == null) {
 			throw new InvalidUserException("User not found with username: " + request.getUsername());

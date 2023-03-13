@@ -1,26 +1,23 @@
 package com.salonService.app.services;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.salonService.app.exception.SalonServiceNotFoundException;
-import com.salonService.app.exception.ServiceAlreadyExistsException;
 import com.salonService.app.entity.Appointment;
 import com.salonService.app.entity.SalonService;
 import com.salonService.app.entity.ServiceCart;
+import com.salonService.app.exception.SalonServiceNotFoundException;
+import com.salonService.app.exception.ServiceAlreadyExistsException;
 import com.salonService.app.repository.IAppointmentRepository;
 import com.salonService.app.repository.ISalonRepository;
 import com.salonService.app.repository.IServiceCartRepository;
-//import com.salonService.app.Exception.ServiceAlreadyExistsException;
+
 
 @Service
 @Transactional
@@ -104,17 +101,14 @@ public class SalonServiceImpl implements ISalonService {
 	@Override
 	public SalonService getService(Long serviceId) throws SalonServiceNotFoundException {
 		Optional<SalonService> optional = salonRepository.findById(serviceId);
-		SalonService s = optional.orElseThrow(() -> new SalonServiceNotFoundException("Salon Service NOT FOUND"));
-		return s;
+		return optional.orElseThrow(() -> new SalonServiceNotFoundException("Salon Service NOT FOUND"));
 	}
 
 	@Override
 	public List<SalonService> getAllServices() throws SalonServiceNotFoundException {
 		Iterable<SalonService> order2 = salonRepository.findAll();
 		List<SalonService> s3 = new ArrayList<>();
-		order2.forEach(order -> {
-			s3.add(order);
-		});
+		order2.forEach(s3::add);
 		if (s3.isEmpty())
 			throw new SalonServiceNotFoundException("Salon Service NOT FOUND");
 		return s3;
@@ -124,9 +118,7 @@ public class SalonServiceImpl implements ISalonService {
 	public List<SalonService> getSeviceByName(String seviceName) throws SalonServiceNotFoundException {
 		Iterable<SalonService> order2 = salonRepository.findBySeviceName(seviceName);
 		List<SalonService> s3 = new ArrayList<>();
-		order2.forEach(order -> {
-			s3.add(order);
-		});
+		order2.forEach(s3::add);
 		if (s3.isEmpty())
 			throw new SalonServiceNotFoundException("Salon Service NOT FOUND with name " + seviceName);
 		return s3;
@@ -136,9 +128,7 @@ public class SalonServiceImpl implements ISalonService {
 	public List<SalonService> getServiceByPrice(String servicePrice) throws SalonServiceNotFoundException {
 		Iterable<SalonService> order2 = salonRepository.findByServicePrice(servicePrice);
 		List<SalonService> s3 = new ArrayList<>();
-		order2.forEach(order -> {
-			s3.add(order);
-		});
+		order2.forEach(s3::add);
 		if (s3.isEmpty())
 			throw new SalonServiceNotFoundException("Salon Service NOT FOUND with price " + servicePrice);
 		return s3;
@@ -148,9 +138,7 @@ public class SalonServiceImpl implements ISalonService {
 	public List<SalonService> getServicesByDuration(String serviceDuration) throws SalonServiceNotFoundException {
 		Iterable<SalonService> order2 = salonRepository.findByServiceDuration(serviceDuration);
 		List<SalonService> s3 = new ArrayList<>();
-		order2.forEach(order -> {
-			s3.add(order);
-		});
+		order2.forEach(s3::add);
 		if (s3.isEmpty())
 			throw new SalonServiceNotFoundException("Salon Service NOT FOUND with duration " + serviceDuration);
 		return s3;

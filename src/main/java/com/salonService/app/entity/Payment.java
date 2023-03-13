@@ -57,7 +57,7 @@ public class Payment {
 		CASH,CARD
 	}
 	public enum PaymentStatus{
-		PENDING,PAID
+		PENDING,PAID,REFUNDED
 	}
 
 }

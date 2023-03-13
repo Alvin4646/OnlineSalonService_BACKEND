@@ -31,7 +31,7 @@ public class IPaymentServiceImpl implements IPaymentService {
 
 	@Override
 	public Payment addPayment(Payment payment) {
-		// TODO Auto-generated method stub
+		
 		return iPaymentRepository.save(payment);
 	}
 

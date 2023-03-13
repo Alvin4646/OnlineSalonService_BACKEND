@@ -29,18 +29,18 @@ public class IServiceCartServiceImpl implements IServiceCartService {
 	public ServiceCart addServiceToCart(SalonService service, Long cartId) throws CartNotFoundException, SalonServiceNotFoundException{
 		int count=0;
 		 Optional<ServiceCart> service2 =serviceRepo.findById(cartId);
-		 if(service2.isPresent());
+		 if(service2.isPresent());	
 		 ServiceCart service1= service2.get();
 		 if(!service2.isPresent()) {
 			 throw new CartNotFoundException("Cart with customer "+cartId+"not found to add service");
 		 }
-		 for(SalonService a: iSalonService.getAllServices())
-			    if(service.getServiceId()==a.getServiceId()){
-			    	count++;
-			} 
-			if(count==0) {
-			   throw new SalonServiceNotFoundException("Service not available right now to add to the cart");	
-			}
+//		 for(SalonService a: iSalonService.getAllServices())
+//			    if(service.getServiceId()==a.getServiceId()){
+//			    	count++;
+//			} 
+//			if(count==0) {
+//			   throw new SalonServiceNotFoundException("Service not available right now to add to the cart");	
+//			}
 		 
 			service1.getServiceList().add(service); 
 			service1.getServiceList().sort((a,b)->a.getServiceId().compareTo(cartId));

@@ -46,17 +46,17 @@ public class CustomerController {
 		if (customer == null) {
 			// Exception
 		}
-		return new ResponseEntity<Customer>(customer, HttpStatus.OK);
+		return new ResponseEntity<>(customer, HttpStatus.OK);
 	}
 
 	@DeleteMapping("/customer/delete/{cid}")
 	public ResponseEntity<String> removeCustomer(@PathVariable("cid") Integer custId, HttpServletRequest request) throws CustomerNotFoundException {
 		Customer deleteCustomer = iCustomerService.deleteCustomer(custId) ;
 		if(deleteCustomer != null) {
-			return new ResponseEntity<String>("Customer deleted successfully", HttpStatus.OK);
+			return new ResponseEntity<>("Customer deleted successfully", HttpStatus.OK);
 		}
 		else
-			return new ResponseEntity<String>("Failed to delete customer", HttpStatus.BAD_REQUEST);
+			return new ResponseEntity<>("Failed to delete customer", HttpStatus.BAD_REQUEST);
 	}
 
 	@GetMapping("/customer")

@@ -18,6 +18,7 @@ import com.salonService.app.entity.Appointment;
 import com.salonService.app.entity.Appointment.AppointmentStatus;
 import com.salonService.app.entity.Customer;
 import com.salonService.app.entity.Payment;
+import com.salonService.app.entity.Payment.PaymentStatus;
 import com.salonService.app.entity.SalonService;
 import com.salonService.app.entity.ServiceCart;
 import com.salonService.app.exception.AppointmentException;
@@ -49,8 +50,7 @@ public class IAppointmentServiceImpl implements IAppointmentService {
 	@Override
 	public Appointment addAppointment(Appointment appointment) throws DuplicateAppointmentException {
 
-		Appointment newAppointment = iappointmentRepo.save(appointment);
-		return newAppointment; 
+		return iappointmentRepo.save(appointment); 
 
 	}
 	
@@ -285,6 +285,9 @@ public class IAppointmentServiceImpl implements IAppointmentService {
 		if(foundAppointment.getAppointmentStatus()==AppointmentStatus.CANCELED)
 			return "Appointment is already Canceled";
 		foundAppointment.setAppointmentStatus(AppointmentStatus.CANCELED);
+		if(foundAppointment.getPayment().getStatus()==PaymentStatus.PAID) {
+			foundAppointment.getPayment().setStatus(PaymentStatus.REFUNDED);
+		}
 		iappointmentRepo.save(foundAppointment);
 		return "Appointment Canceled successfully";
 	}
