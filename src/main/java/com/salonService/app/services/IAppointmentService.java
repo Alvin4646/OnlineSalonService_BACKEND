@@ -37,4 +37,6 @@ public interface IAppointmentService {
 	public String cancelAppointment(long id) throws AppointmentException;
 	
 	public Appointment bookAppointment(long aid,Integer cid,Payment payment) throws AppointmentException, CustomerNotFoundException;
+	
+	public String completeAppointment(long aid) throws AppointmentException;
 }

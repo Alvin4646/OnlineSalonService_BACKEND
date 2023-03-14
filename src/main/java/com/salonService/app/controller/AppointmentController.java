@@ -68,8 +68,8 @@ public class AppointmentController {
 		return iAppointmentService.updateAppointment(id, appointment);
 	}
 
-	@GetMapping("/appointments/status")
-	public List<Appointment> getOpenAppointments(AppointmentStatus status,HttpServletRequest request) throws AppointmentException {
+	@GetMapping("/appointments/status/{status}")
+	public List<Appointment> getOpenAppointments(@PathVariable AppointmentStatus status,HttpServletRequest request) throws AppointmentException {
 		
 		return iAppointmentService.getOpenAppointments(status);
 	}
@@ -96,6 +96,11 @@ public class AppointmentController {
 	public Appointment bookAppointment(@RequestBody Payment payment,@PathVariable long aid,@PathVariable Integer cid,HttpServletRequest request)throws AppointmentException,CustomerNotFoundException, JwtTokenMalformedException, JwtTokenMissingException{
 		JWTUtils.validateToken(request);
 		return iAppointmentService.bookAppointment(aid, cid, payment);
+	}
+	@PutMapping("/appointment/complete/{aid}")
+	public String completeAppointment(@PathVariable long aid,HttpServletRequest request) throws AppointmentException, JwtTokenMalformedException, JwtTokenMissingException {
+		JWTUtils.validateToken(request);
+		return iAppointmentService.completeAppointment(aid);
 	}
 
 }

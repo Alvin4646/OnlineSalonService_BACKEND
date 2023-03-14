@@ -128,7 +128,7 @@ public class Appointment {
 	}
 
 	public enum AppointmentStatus {
-		OPEN, CLOSE, CANCELED, BOOKED
+		OPEN, CLOSE, CANCELED, BOOKED,COMPLETED
 	}
 
 }

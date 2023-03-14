@@ -313,4 +313,13 @@ public class IAppointmentServiceImpl implements IAppointmentService {
 		return foundAppointment;
 	}
 	
+	public String completeAppointment(long aid) throws AppointmentException {
+		Appointment foundAppointment=getAppointmentById(aid);
+		if(foundAppointment.getAppointmentStatus()==AppointmentStatus.COMPLETED)
+			return "Appointment is already Completed";
+		foundAppointment.setAppointmentStatus(AppointmentStatus.COMPLETED);
+		iappointmentRepo.save(foundAppointment);
+		return "Appointment Confirmed Successfully";
+	}
+	
 }
